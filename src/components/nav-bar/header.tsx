@@ -1,13 +1,20 @@
 import { fetchCategoriasPadre } from "@/lib/data/category.data";
 import Image from "next/image";
-import { Button } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
 
-import MobileMenu from "./mobile-menu";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { ModeToggle } from "../toggle";
+import MobileMenu from "./mobile-menu";
 
-export default async function HeaderMain() {
+interface HeaderMainProps {
+  id?: string;
+}
+
+export default async function HeaderMain({ id }: HeaderMainProps) {
   const categorias = await fetchCategoriasPadre();
+
   return (
     <header>
       <nav className="sticky top-0 z-50 bg-gray-950 shadow-xs">
@@ -35,11 +42,24 @@ export default async function HeaderMain() {
         </div>
 
         <div className="flex flex-wrap items-center lg:h-28 gap-2 px-2">
-          {categorias.map((categoria) => (
-            <Button key={categoria.id} variant="outline">
-              {categoria.nombre}
-            </Button>
-          ))}
+          {categorias.map((categoria) => {
+            const isActive = id && id === String(categoria.id);
+
+            return (
+              <Link
+                key={categoria.id}
+                href={`/category/${categoria.id}`}
+                className={cn(
+                  buttonVariants({
+                    variant: isActive ? "default" : "outline",
+                  }),
+                  isActive && "pointer-events-none cursor-not-allowed"
+                )}
+              >
+                {categoria.nombre}
+              </Link>
+            );
+          })}
         </div>
       </div>
       <Separator className="my-4" />

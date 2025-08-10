@@ -31,7 +31,7 @@ export default async function Home() {
   const categoriesData = await fetchLibrosPorCategoriaAll();
 
   return (
-    <div className="min-h-screen">
+    <>
       <HeaderMain />
       <main className="container mx-auto p-2">
         <div className="grid-cols-4">
@@ -46,29 +46,37 @@ export default async function Home() {
             <Suspense fallback={<TableSkeleton col1="Autor" />}>
               <TableEntity
                 titleCol="Autor"
-                basePath="/author"
+                basePath="/books/author"
                 data={autoresData}
               />
             </Suspense>
 
             <Suspense fallback={<TableSkeleton col1="Tema" />}>
-              <TableEntity titleCol="Tema" basePath="/tema" data={temasData} />
+              <TableEntity
+                titleCol="Tema"
+                basePath="/books/theme"
+                data={temasData}
+              />
             </Suspense>
 
             <Suspense fallback={<TableSkeleton col1="Año" />}>
-              <TableEntity titleCol="Año" basePath="/anio" data={aniosData} />
+              <TableEntity
+                titleCol="Año"
+                basePath="/books/anio"
+                data={aniosData}
+              />
             </Suspense>
 
-            <Suspense fallback={<TableSkeleton col1="Categoría" />}>
+            <Suspense fallback={<TableSkeleton col1="Sub categoría" />}>
               <TableEntity
-                titleCol="Categoría"
-                basePath="/category"
+                titleCol="Sub categoría"
+                basePath="/books/sub-category"
                 data={categoriesData}
               />
             </Suspense>
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 }

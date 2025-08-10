@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { Badge } from "../ui/badge";
 import {
   Pagination,
@@ -60,7 +60,9 @@ export default function TableEntity({
                 </TableCell>
                 <TableCell className="px-4 py-2">
                   <Badge asChild>
-                    <Link href={`${basePath}/${item.id}`}>
+                    <Link
+                      href={`${basePath}/${isNaN(item.id) ? "SF" : item.id}`}
+                    >
                       {item.total_libros}
                     </Link>
                   </Badge>

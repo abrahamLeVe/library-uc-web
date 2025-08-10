@@ -8,14 +8,6 @@ export interface Entity {
   total_libros: number;
 }
 
-export interface PaginatedResult<T> {
-  data: T[];
-  total: number;
-  page: number;
-  perPage: number;
-  totalPages: number;
-}
-
 interface FetchEntityOptions {
   table: "autores" | "temas"; // más adelante puedes agregar "categorias"
   joinTable: "libros_autores" | "libros_temas";
@@ -51,6 +43,7 @@ export async function fetchEntityConLibrosAll({
    LIBROS por AÑO (sin paginación)
    =========================== */
 export interface LibroPorAnio {
+  id: string;
   anio: string;
   total_libros: number;
 }
@@ -67,8 +60,8 @@ export async function fetchLibrosPorAnioAll(): Promise<Entity[]> {
     `;
 
     // Adaptamos al formato Entity para mantener consistencia
-    return data.map((item, index) => ({
-      id: index + 1,
+    return data.map((item) => ({
+      id: Number(item.anio),
       nombre: item.anio,
       total_libros: item.total_libros,
     }));
