@@ -34,7 +34,7 @@ export default async function Home() {
 
   return (
     <>
-      <HeaderMain />
+      <HeaderMain isHome />
       <main className="container mx-auto p-2">
         <div className="grid-cols-4">
           <h2 className="text-xl md:text-2xl pb-1">Descubrir</h2>

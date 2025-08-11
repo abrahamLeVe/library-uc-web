@@ -14,3 +14,20 @@ export interface Libros {
   categoria_hija: string;
   temas: string | null;
 }
+
+export interface Entity {
+  id: number;
+  nombre: string;
+  total_libros: number;
+}
+
+export interface FetchEntityOptions {
+  table: "autores" | "temas";
+  joinTable: "libros_autores" | "libros_temas";
+  joinColumn: "autor_id" | "tema_id";
+}
+export interface LibroPorAnio {
+  id: string;
+  anio: string;
+  total_libros: number;
+}

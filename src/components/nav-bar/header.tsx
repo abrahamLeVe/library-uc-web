@@ -2,26 +2,54 @@ import { fetchCategoriasPadre } from "@/lib/data/category.data";
 import Image from "next/image";
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
-
 import { cn } from "@/lib/utils";
+import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "../toggle";
 import MobileMenu from "./mobile-menu";
+import { DropdownMenuCategories } from "./drop-down";
+
+export const revalidate = 60;
 
 interface HeaderMainProps {
   id?: string;
+  isHome?: boolean;
 }
 
-export default async function HeaderMain({ id }: HeaderMainProps) {
+export default async function HeaderMain({
+  id,
+  isHome = false,
+}: HeaderMainProps) {
   const categorias = await fetchCategoriasPadre();
 
   return (
     <header>
       <nav className="sticky top-0 z-50 bg-gray-950 shadow-xs">
-        <div className="container flex items-center justify-end h-14 p-1 m-auto gap-2">
-          <ModeToggle />
-          <div className="xl:hidden">
-            <MobileMenu />
+        <div className="container flex items-center justify-between h-14 p-1 m-auto gap-2">
+          <div className="flex gap-2">
+            <div>
+              <Link
+                href={`/`}
+                className={cn(
+                  buttonVariants({
+                    variant: isHome ? "default" : "outline",
+                  }),
+                  isHome && "pointer-events-none cursor-not-allowed"
+                )}
+              >
+                <HomeIcon />
+                Página de inicio
+              </Link>
+            </div>
+            <div>
+              <DropdownMenuCategories />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <ModeToggle />
+            <div className="xl:hidden">
+              <MobileMenu />
+            </div>
           </div>
         </div>
       </nav>

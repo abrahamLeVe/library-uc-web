@@ -28,6 +28,10 @@ export function TableSkeleton({
 }: TableSkeletonProps) {
   return (
     <div className="w-full md:max-w-lg border rounded-md">
+      {/* Buscador skeleton */}
+      <div className="p-3 border-b">
+        <Skeleton className="h-10 w-full" />
+      </div>
       <Table className="w-full border-collapse text-sm">
         <TableHeader>
           <TableRow>

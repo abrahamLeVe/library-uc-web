@@ -32,18 +32,40 @@ export default function TableEntity({
   const ITEMS_PER_PAGE = 10;
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
 
-  // Calcular total de páginas
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  // Filtrar datos según búsqueda
+  const filteredData = useMemo(() => {
+    return data.filter((item) =>
+      item.nombre.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, data]);
+
+  // Calcular total de páginas después de filtrar
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
 
   // Obtener datos paginados
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return data.slice(start, start + ITEMS_PER_PAGE);
-  }, [currentPage, data]);
+    return filteredData.slice(start, start + ITEMS_PER_PAGE);
+  }, [currentPage, filteredData]);
 
   return (
     <div className="w-full md:max-w-lg border rounded-md">
+      {/* Barra de búsqueda */}
+      <div className="p-3 border-b">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1); // Reset a la primera página al buscar
+          }}
+          className="w-full px-3 py-2 border rounded-md text-sm"
+        />
+      </div>
+
       <Table className="w-full border-collapse text-sm">
         <TableHeader>
           <TableRow>
@@ -80,26 +102,28 @@ export default function TableEntity({
       </Table>
 
       {/* Paginación */}
-      <div className="flex justify-center p-3 border-t">
-        <Pagination>
-          <PaginationContent>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage(i + 1);
-                  }}
-                  isActive={currentPage === i + 1}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-          </PaginationContent>
-        </Pagination>
-      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center p-3 border-t">
+          <Pagination>
+            <PaginationContent>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(i + 1);
+                    }}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

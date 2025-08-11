@@ -1,18 +1,7 @@
 import postgres from "postgres";
+import { Entity, FetchEntityOptions, LibroPorAnio } from "../definitions";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
-
-export interface Entity {
-  id: number;
-  nombre: string;
-  total_libros: number;
-}
-
-interface FetchEntityOptions {
-  table: "autores" | "temas"; // más adelante puedes agregar "categorias"
-  joinTable: "libros_autores" | "libros_temas";
-  joinColumn: "autor_id" | "tema_id";
-}
 
 export async function fetchEntityConLibrosAll({
   table,
@@ -39,15 +28,6 @@ export async function fetchEntityConLibrosAll({
   }
 }
 
-/* ===========================
-   LIBROS por AÑO (sin paginación)
-   =========================== */
-export interface LibroPorAnio {
-  id: string;
-  anio: string;
-  total_libros: number;
-}
-
 export async function fetchLibrosPorAnioAll(): Promise<Entity[]> {
   try {
     const data = await sql<LibroPorAnio[]>`
@@ -59,7 +39,6 @@ export async function fetchLibrosPorAnioAll(): Promise<Entity[]> {
       ORDER BY anio DESC;
     `;
 
-    // Adaptamos al formato Entity para mantener consistencia
     return data.map((item) => ({
       id: Number(item.anio),
       nombre: item.anio,
@@ -70,10 +49,6 @@ export async function fetchLibrosPorAnioAll(): Promise<Entity[]> {
     throw new Error("❌ Failed to fetch all libros por año.");
   }
 }
-
-/* ===========================
-   LIBROS por CATEGORÍA (no padres)
-   =========================== */
 
 export async function fetchLibrosPorCategoriaAll(): Promise<Entity[]> {
   try {
@@ -90,7 +65,6 @@ export async function fetchLibrosPorCategoriaAll(): Promise<Entity[]> {
       ORDER BY total_libros DESC, c.nombre ASC;
     `;
 
-    // Mapeo opcional, por si quieres mantener el formato estándar
     return data.map((item) => ({
       id: item.id,
       nombre: item.nombre,
