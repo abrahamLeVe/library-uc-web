@@ -28,3 +28,15 @@ export async function fetchLibrosPorAutorId(autorId: number) {
     throw new Error("Failed to fetch books by author id.");
   }
 }
+
+export async function fetchAutoresId() {
+  try {
+    return await sql<{ id: number }[]>`
+      SELECT id
+      FROM autores
+    `;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch authors ids.");
+  }
+}

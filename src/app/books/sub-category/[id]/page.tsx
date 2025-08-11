@@ -1,7 +1,20 @@
 import LibrosTable from "@/components/common/libros-table";
 import { LibrosTableSkeleton } from "@/components/common/skeleton-entity";
-import { fetchLibrosPorCategoriaHija } from "@/lib/data/sub-category.data";
+import {
+  fetchCategoriasHijasId,
+  fetchLibrosPorCategoriaHija,
+} from "@/lib/data/sub-category.data";
 import { Suspense } from "react";
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const categoriasHijas = await fetchCategoriasHijasId();
+
+  return categoriasHijas.map((categoria) => ({
+    id: categoria.id.toString(),
+  }));
+}
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;

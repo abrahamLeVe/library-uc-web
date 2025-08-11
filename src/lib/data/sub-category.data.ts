@@ -29,3 +29,16 @@ export async function fetchLibrosPorCategoriaHija(categoriaId: number) {
     throw new Error("Failed to fetch books by child category.");
   }
 }
+
+export async function fetchCategoriasHijasId() {
+  try {
+    return await sql<{ id: number }[]>`
+      SELECT id
+      FROM categorias
+      WHERE parent_id IS NOT NULL
+    `;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch child category ids.");
+  }
+}

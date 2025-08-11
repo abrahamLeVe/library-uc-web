@@ -29,3 +29,11 @@ export async function fetchLibrosPorTemaId(temaId: number) {
     throw new Error("Failed to fetch books by tema id.");
   }
 }
+
+export async function fetchTemasId() {
+  return await sql<{ id: number }[]>`
+    SELECT id 
+    FROM temas
+    ORDER BY id ASC
+  `;
+}

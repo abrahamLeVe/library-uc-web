@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   title: "Estadísticas de Libros",
 };
 
+export const revalidate = 60;
+
 export default async function Home() {
   const autoresData = await fetchEntityConLibrosAll({
     table: "autores",

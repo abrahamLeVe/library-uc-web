@@ -29,3 +29,18 @@ export async function fetchLibrosPorAnio(anio: string) {
     throw new Error("Failed to fetch books by year.");
   }
 }
+
+export async function fetchAnios() {
+  try {
+    const result = await sql<{ anio: number }[]>`
+      SELECT DISTINCT l.anio
+      FROM libros l
+      WHERE l.anio IS NOT NULL
+      ORDER BY l.anio DESC
+    `;
+    return result.map((row) => row.anio);
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch years.");
+  }
+}

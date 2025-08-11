@@ -47,3 +47,20 @@ export async function fetchLibrosPorCategoriaPadre(parentCategoriaId: number) {
     throw new Error("Failed to fetch books by parent category.");
   }
 }
+
+export async function fetchCategoriasPadreId(): Promise<
+  Pick<Categoria, "id">[]
+> {
+  try {
+    const categorias = await sql<Pick<Categoria, "id">[]>`
+      SELECT id
+      FROM categorias
+      WHERE parent_id IS NULL
+    `;
+
+    return categorias;
+  } catch (error) {
+    console.error("Error al traer categorías padre:", error);
+    return [];
+  }
+}
