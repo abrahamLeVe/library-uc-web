@@ -2,7 +2,7 @@ import postgres from "postgres";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 8;
 
 export async function fetchFilteredBooks(query: string, currentPage: number) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;

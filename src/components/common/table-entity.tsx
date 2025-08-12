@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { TableNoResults } from "./table-no-results";
 
 interface TableEntityProps {
   titleCol: string;
@@ -96,11 +97,7 @@ export default function TableEntity({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={2} className="text-center py-4">
-                No hay registros
-              </TableCell>
-            </TableRow>
+            <TableNoResults />
           )}
         </TableBody>
       </Table>

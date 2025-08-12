@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
-import { Input } from "../ui/input";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 interface SearchBarProps {
   isMobile?: boolean;
@@ -36,7 +37,7 @@ export default function SearchBar({ isMobile = false }: SearchBarProps) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="text-white rounded-r-none"
+        className={cn(!isMobile && "text-white", "rounded-r-none")}
       />
       <Button
         onClick={handleSearch}

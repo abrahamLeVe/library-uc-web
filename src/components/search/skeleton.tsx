@@ -24,24 +24,17 @@ export function SearchTableSkeleton() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 8 }).map((_, i) => (
             <TableRow key={i}>
               {Array.from({ length: 6 }).map((_, j) => (
                 <TableCell key={j}>
-                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-5 w-[100px]" />
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-
-      {/* Paginación skeleton */}
-      <div className="flex space-x-2 justify-center">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-8 rounded" />
-        ))}
-      </div>
     </div>
   );
 }
