@@ -16,7 +16,7 @@ export default async function Page() {
   return (
     <>
       <h2 className="text-xl md:text-2xl pb-1">
-        Buscar por Fecha de publicación
+        Buscar por fecha de publicación
       </h2>
       <div className="flex justify-center">
         <Suspense fallback={<TableSkeleton col1="Año" />}>

@@ -1,13 +1,14 @@
 import { fetchCategoriasPadre } from "@/lib/data/category.data";
-import Image from "next/image";
-import { buttonVariants } from "../ui/button";
-import { Separator } from "../ui/separator";
 import { cn } from "@/lib/utils";
 import { HomeIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import SearchBar from "../search/search-bar";
 import { ModeToggle } from "../toggle";
-import MobileMenu from "./mobile-menu";
+import { buttonVariants } from "../ui/button";
+import { Separator } from "../ui/separator";
 import { DropdownMenuCategories } from "./drop-down";
+import MobileMenu from "./mobile-menu";
 
 export const revalidate = 60;
 
@@ -41,21 +42,27 @@ export default async function HeaderMain({
                 Página de inicio
               </Link>
             </div>
-            <div>
+            <div className="hidden md:block">
               <DropdownMenuCategories />
             </div>
           </div>
           <div className="flex gap-2">
+            <div className="hidden md:block">
+              <SearchBar />
+            </div>
             <ModeToggle />
-            <div className="xl:hidden">
+            <div className="md:hidden">
               <MobileMenu />
             </div>
           </div>
         </div>
       </nav>
 
-      <div className="container flex flex-col lg:h-52 m-auto">
-        <div className="flex items-end justify-between h-20 px-2 mb-5">
+      <div className="container flex flex-col lg:h-52 m-auto gap-2 p-2">
+        <div className=" md:hidden">
+          <SearchBar isMobile />
+        </div>
+        <div className="flex items-end justify-between md:h-20">
           <h1 className="text-2xl md:text-4xl font-semibold border-b pb-1">
             Biblioteca Torres Lara
           </h1>
@@ -69,7 +76,7 @@ export default async function HeaderMain({
           />
         </div>
 
-        <div className="flex flex-wrap items-center lg:h-28 gap-2 px-2">
+        <div className="flex flex-wrap items-center lg:h-28 gap-2">
           {categorias.map((categoria) => {
             const isActive = id && id === String(categoria.id);
 

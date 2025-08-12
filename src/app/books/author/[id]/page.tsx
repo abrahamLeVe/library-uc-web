@@ -20,7 +20,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <h1 className="text-xl font-bold mb-4 hi">Libros por author</h1>
+      <h2 className="text-xl md:text-2xl pb-1">Libros por author</h2>
       <Suspense fallback={<LibrosTableSkeleton />}>
         <LibrosTable libros={libros} />
       </Suspense>

@@ -5,7 +5,12 @@ import {
   fetchCategoriasPadreId,
   fetchLibrosPorCategoriaPadre,
 } from "@/lib/data/category.data";
+import { Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Libros por categoría",
+};
 
 export const revalidate = 60;
 
@@ -26,7 +31,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     <>
       <HeaderMain id={id} />
       <main className="container mx-auto p-2">
-        <h1 className="text-xl font-bold mb-4 hi">Libros por categoría</h1>
+        <h2 className="text-xl md:text-2xl pb-1">Libros por categoría</h2>
         <Suspense fallback={<LibrosTableSkeleton />}>
           <LibrosTable libros={libros} />
         </Suspense>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Badge } from "../ui/badge";
+import { Input } from "../ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -54,15 +55,18 @@ export default function TableEntity({
     <div className="w-full md:max-w-lg border rounded-md">
       {/* Barra de búsqueda */}
       <div className="p-3 border-b">
-        <input
-          type="text"
+        <label htmlFor={`search-${titleCol}`} className="sr-only">
+          Buscar
+        </label>
+        <Input
+          id={`search-${titleCol}`}
+          type="search"
           placeholder="Buscar..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
             setCurrentPage(1); // Reset a la primera página al buscar
           }}
-          className="w-full px-3 py-2 border rounded-md text-sm"
         />
       </div>
 
