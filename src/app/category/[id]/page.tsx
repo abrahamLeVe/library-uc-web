@@ -1,6 +1,5 @@
 import LibrosTable from "@/components/common/libros-table";
 import { LibrosTableSkeleton } from "@/components/common/skeleton-entity";
-import HeaderMain from "@/components/nav-bar/header";
 import {
   fetchCategoriasPadreId,
   fetchLibrosPorCategoriaPadre,
@@ -29,13 +28,10 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <HeaderMain id={id} />
-      <main className="container mx-auto p-2">
-        <h2 className="text-xl md:text-2xl pb-1">Libros por categoría</h2>
-        <Suspense fallback={<LibrosTableSkeleton />}>
-          <LibrosTable libros={libros} />
-        </Suspense>
-      </main>
+      <h2 className="text-xl md:text-2xl pb-1">Libros por categoría</h2>
+      <Suspense fallback={<LibrosTableSkeleton />}>
+        <LibrosTable libros={libros} />
+      </Suspense>
     </>
   );
 }

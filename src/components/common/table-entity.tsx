@@ -5,12 +5,6 @@ import { useMemo, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-} from "../ui/pagination";
-import {
   Table,
   TableBody,
   TableCell,
@@ -18,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { ClientPagination } from "./client-pagination";
 import { TableNoResults } from "./table-no-results";
 
 interface TableEntityProps {
@@ -101,28 +96,14 @@ export default function TableEntity({
           )}
         </TableBody>
       </Table>
-
       {/* Paginación */}
       {totalPages > 1 && (
         <div className="flex justify-center p-3 border-t">
-          <Pagination>
-            <PaginationContent>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(i + 1);
-                    }}
-                    isActive={currentPage === i + 1}
-                  >
-                    {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-            </PaginationContent>
-          </Pagination>
+          <ClientPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
     </div>

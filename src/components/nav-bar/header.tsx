@@ -1,9 +1,8 @@
 import { fetchCategoriasPadre } from "@/lib/data/category.data";
 import { cn } from "@/lib/utils";
-import { HomeIcon } from "lucide-react";
+import { HomeIcon, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import SearchBar from "../search/search-bar";
 import { ModeToggle } from "../toggle";
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -15,18 +14,20 @@ export const revalidate = 60;
 interface HeaderMainProps {
   id?: string;
   isHome?: boolean;
+  isSearch?: boolean;
 }
 
 export default async function HeaderMain({
   id,
   isHome = false,
+  isSearch = false,
 }: HeaderMainProps) {
   const categorias = await fetchCategoriasPadre();
 
   return (
     <header>
       <nav className="sticky top-0 z-50 bg-gray-950 shadow-xs">
-        <div className="container flex items-center justify-between h-14 p-1 m-auto gap-2">
+        <div className="container flex flex-wrap items-center justify-between md:h-14 p-1 m-auto gap-2">
           <div className="flex gap-2">
             <div>
               <Link
@@ -47,10 +48,23 @@ export default async function HeaderMain({
             </div>
           </div>
           <div className="flex gap-2">
-            <div className="hidden md:block">
-              <SearchBar />
+            <div>
+              <Link
+                className={cn(
+                  buttonVariants({
+                    variant: isSearch ? "default" : "outline",
+                  }),
+                  isSearch && "pointer-events-none cursor-not-allowed"
+                )}
+                href={"/search"}
+              >
+                <Search size={18} />
+                <span className="hidden sm:block">Buscar en todo</span>
+              </Link>
             </div>
-            <ModeToggle />
+            <div>
+              <ModeToggle />
+            </div>
             <div className="md:hidden">
               <MobileMenu />
             </div>
@@ -59,9 +73,6 @@ export default async function HeaderMain({
       </nav>
 
       <div className="container flex flex-col lg:h-52 m-auto gap-2 p-2">
-        <div className=" md:hidden">
-          <SearchBar isMobile />
-        </div>
         <div className="flex items-end justify-between md:h-20">
           <h1 className="text-2xl md:text-4xl font-semibold border-b pb-1">
             Biblioteca Torres Lara
