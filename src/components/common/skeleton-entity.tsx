@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 interface TableSkeletonProps {
   rows?: number;
@@ -76,11 +77,20 @@ export function LibrosTableSkeleton() {
       <Skeleton className="h-10 w-full" />
 
       {/* Tabla skeleton */}
+      <TableBooksSkeleton />
+    </div>
+  );
+}
+
+export function TableBooksSkeleton() {
+  return (
+    <>
+      {/* Tabla skeleton */}
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Vista previa</TableHead>
-            <TableHead>Año</TableHead>
+            <TableHead className="w-28">Vista previa</TableHead>
+            <TableHead className="w-14">Año</TableHead>
             <TableHead>Título</TableHead>
             <TableHead>Autores</TableHead>
             <TableHead>Sub categoría</TableHead>
@@ -88,24 +98,19 @@ export function LibrosTableSkeleton() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.from({ length: 5 }).map((_, i) => (
+          {Array.from({ length: 8 }).map((_, i) => (
             <TableRow key={i}>
               {Array.from({ length: 6 }).map((_, j) => (
                 <TableCell key={j}>
-                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton
+                    className={cn(j < 2 ? "w-14" : "w-[100px]", "h-5")}
+                  />
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-
-      {/* Paginación skeleton */}
-      <div className="flex space-x-2 justify-center">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-8 rounded" />
-        ))}
-      </div>
-    </div>
+    </>
   );
 }

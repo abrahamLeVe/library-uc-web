@@ -1,4 +1,4 @@
-import HeaderMain from "@/components/nav-bar/header";
+import HeaderMain from "@/components/nav-bar/header-main";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

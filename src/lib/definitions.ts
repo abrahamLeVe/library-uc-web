@@ -31,3 +31,20 @@ export interface LibroPorAnio {
   anio: string;
   total_libros: number;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: "CLIENT" | "ADMIN" | string; // puedes restringir más si sabes todos los roles
+  dni: string | null;
+  telefono: string | null;
+  direccion: string | null;
+  fecha_nacimiento: Date | null;
+  is_verified: boolean;
+  verification_code: string | null;
+  verification_expires: Date | null;
+  created_at: Date;
+  updated_at: Date;
+}

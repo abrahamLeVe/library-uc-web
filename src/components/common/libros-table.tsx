@@ -17,7 +17,7 @@ import { Libros } from "@/lib/definitions";
 export default function LibrosTable({ libros }: { libros: Libros[] }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 8;
 
   const filtered = libros.filter((libro) =>
     `${libro.titulo} ${libro.autores ?? ""} ${libro.categoria_hija} ${

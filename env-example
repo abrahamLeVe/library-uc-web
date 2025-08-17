@@ -15,3 +15,8 @@ connect_timeout=
 # `openssl rand -base64 32`
 AUTH_SECRET=
 AUTH_URL=http://localhost:3000/api/auth
+
+SMTP_HOST=smtp.gmail.com
+SMTP_USER=tu_correo@gmail.com
+SMTP_PASS=tu_contraseña_app
+NEXT_PUBLIC_APP_URL=http://localhost:3000

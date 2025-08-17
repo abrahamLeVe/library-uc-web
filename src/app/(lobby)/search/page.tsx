@@ -1,6 +1,7 @@
+import { TableBooksSkeleton } from "@/components/common/skeleton-entity";
 import Pagination from "@/components/search/pagination";
 import Search from "@/components/search/search";
-import { SearchTableSkeleton } from "@/components/search/skeleton";
+
 import SearchTable from "@/components/search/table";
 import { fetchBooksPages } from "@/lib/data/search.data";
 import { Metadata } from "next";
@@ -27,7 +28,7 @@ export default async function Page(props: {
       <div className="space-y-4">
         <Search placeholder="Buscar libros..." />
 
-        <Suspense key={query + currentPage} fallback={<SearchTableSkeleton />}>
+        <Suspense key={query + currentPage} fallback={<TableBooksSkeleton />}>
           <SearchTable query={query} currentPage={currentPage} />
         </Suspense>
         <div className="flex w-full justify-center">
