@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { HomeIcon, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ModeToggle } from "../toggle";
+import { ModeToggle } from "../common/toggle";
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { DropdownMenuGeneric } from "./drop-down";
