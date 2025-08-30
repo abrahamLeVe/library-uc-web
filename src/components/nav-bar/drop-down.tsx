@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,8 +9,12 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Session } from "next-auth";
 import Link from "next/link";
 import { ReactNode } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { PowerIcon } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 interface MenuOption {
   label: string;
@@ -19,20 +24,32 @@ interface MenuOption {
 }
 
 interface DropdownMenuGenericProps {
-  triggerLabel: string;
+  triggerLabel?: string;
   menuLabel: string;
   options: MenuOption[];
+  session?: Session | null;
 }
 
 export function DropdownMenuGeneric({
   triggerLabel,
   menuLabel,
   options,
+  session,
 }: DropdownMenuGenericProps) {
+  const user = session?.user;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">{triggerLabel}</Button>
+        {!user ? (
+          <Button variant="outline">{triggerLabel}</Button>
+        ) : (
+          <Avatar className="h-9 w-9 rounded-lg">
+            <AvatarImage src={user.image ?? ""} alt={user.name ?? "Usuario"} />
+            <AvatarFallback>
+              {user.name?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuLabel>{menuLabel}</DropdownMenuLabel>
@@ -48,6 +65,16 @@ export function DropdownMenuGeneric({
               </DropdownMenuItem>
             </Link>
           ))}
+          {session?.user && (
+            <DropdownMenuItem
+              onClick={() => signOut()}
+              className="cursor-pointer"
+            >
+              <PowerIcon className="w-6 mr-2" />
+              <span>Cerrar sesión</span>
+              <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

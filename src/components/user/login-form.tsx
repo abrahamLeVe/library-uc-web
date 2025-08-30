@@ -1,101 +1,59 @@
-"use client";
+import { signIn } from "@/auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-import { authenticate } from "@/lib/action/user.action";
-import { AlertCircleIcon, ArrowRightIcon } from "lucide-react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useActionState, useEffect } from "react";
-import { toast } from "sonner";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Button } from "../ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-
-export function LoginForm({ email }: { email?: string }) {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-  const [errorMessage, formAction, isPending] = useActionState(
-    authenticate,
-    undefined
-  );
-  useEffect(() => {
-    if (searchParams.get("verified")) {
-      toast.success("Cuenta verificada con éxito!");
-    }
-  }, [searchParams]);
-
+export function LoginForm({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
-    <div className={"flex flex-col gap-6"}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Inicia sesión en tu cuenta</CardTitle>
-          <CardDescription>
-            Ingrese su correo electrónico a continuación para iniciar sesión en
-            su cuenta
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form action={formAction}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Card className="overflow-hidden p-0">
+        <CardContent className="grid p-0 md:grid-cols-2">
+          <form
+            className="p-6 md:p-8"
+            action={async () => {
+              "use server";
+              await signIn("google", { redirectTo: "/dashboard" });
+            }}
+          >
             <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email">Correo electrónico</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="ejemplo@mail.com"
-                  defaultValue={email || ""}
-                  required
-                />
+              <div className="flex flex-col items-center text-center">
+                <h1 className="text-2xl font-bold">Bienvenido de nuevo</h1>
+                <p className="text-muted-foreground text-balance">
+                  Inicie sesión en su cuenta de usuario
+                </p>
               </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Contraseña</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline underline-offset-4"
-                  >
-                    ¿Olvidaste tu contraseña?
-                  </a>
-                </div>
-                <Input id="password" name="password" type="password" required />
-              </div>
-              <div className="flex flex-col gap-3">
-                <input type="hidden" name="redirectTo" value={callbackUrl} />
-                <Button className="w-full" disabled={isPending}>
-                  {isPending ? "Validando..." : "Ingresar"}
-                  <ArrowRightIcon className="ml-auto h-5 w-5 " />
-                </Button>
-                {errorMessage && (
-                  <div
-                    className="flex  items-end space-x-1"
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
-                    <Alert variant={"destructive"}>
-                      <AlertCircleIcon />
 
-                      <AlertTitle>Ocurrió un error</AlertTitle>
-                      <AlertDescription>{errorMessage}</AlertDescription>
-                    </Alert>
-                  </div>
-                )}
+              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                <span className="bg-card text-muted-foreground relative z-10 px-2">
+                  Acceder con
+                </span>
               </div>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              ¿No tienes una cuenta?{" "}
-              <Link href="/register" className="underline underline-offset-4">
-                Registrarse
-              </Link>
+              <div className="flex justify-center">
+                <Button variant="outline" type="submit" className="w-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <span>Google</span>
+                </Button>
+              </div>
             </div>
           </form>
+          <div className="bg-muted relative aspect-square hidden md:block">
+            <Image
+              src="/login.png"
+              alt="Image"
+              width={600}
+              height={600}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

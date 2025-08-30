@@ -2,21 +2,24 @@
 
 import { Categoria } from "@/lib/definitions";
 import { cn } from "@/lib/utils";
-import { HomeIcon, Search } from "lucide-react";
+import { HomeIcon, Search, User } from "lucide-react";
+import { Session } from "next-auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "../common/toggle";
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
+import { CategoriesNav } from "./categories-nav";
 import { DropdownMenuGeneric } from "./drop-down";
-import { menuAuthOptions, menuListOptions } from "./menu-options";
+import { menuListOptions, menuSessionOptions } from "./menu-options";
 import MobileMenu from "./mobile-menu";
 
 interface HeaderNavProps {
   categorias: Categoria[];
+  session: Session | null;
 }
 
-export default function HeaderNav({ categorias }: HeaderNavProps) {
+export default function HeaderNav({ categorias, session }: HeaderNavProps) {
   const pathname = usePathname();
 
   const isExactPath = (href: string) => pathname === href;
@@ -52,6 +55,22 @@ export default function HeaderNav({ categorias }: HeaderNavProps) {
 
           <div className="flex gap-2">
             {/* Search */}
+            {session ? (
+              <DropdownMenuGeneric
+                triggerLabel="Mi cuenta"
+                menuLabel="Opciones de cuenta"
+                options={menuSessionOptions}
+                session={session}
+              />
+            ) : (
+              <Link
+                href="/login"
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                <User size={18} />
+                <span className="hidden sm:block">Mi cuenta</span>
+              </Link>
+            )}
             <Link
               href="/search"
               className={cn(
@@ -64,12 +83,6 @@ export default function HeaderNav({ categorias }: HeaderNavProps) {
               <span className="hidden sm:block">Buscar en todo</span>
             </Link>
 
-            <DropdownMenuGeneric
-              triggerLabel="Mi cuenta"
-              menuLabel=""
-              options={menuAuthOptions}
-            />
-
             <ModeToggle />
             <div className="md:hidden">
               <MobileMenu />
@@ -78,32 +91,7 @@ export default function HeaderNav({ categorias }: HeaderNavProps) {
         </div>
       </nav>
 
-      <div className="container flex flex-col lg:h-52 m-auto gap-2 p-2">
-        <div className="flex items-end justify-between md:h-20">
-          <h1 className="text-2xl md:text-4xl font-semibold border-b pb-1">
-            Biblioteca Torres Lara
-          </h1>
-        </div>
-
-        {/* Categorías */}
-        <div className="flex flex-wrap items-center lg:h-28 gap-2">
-          {categorias.map((categoria) => {
-            const href = `/category/${categoria.id}`;
-            return (
-              <Link
-                key={categoria.id}
-                href={href}
-                className={cn(
-                  buttonVariants({ variant: variantForPath(href) }),
-                  isExactPath(href) && "pointer-events-none cursor-not-allowed"
-                )}
-              >
-                {categoria.nombre}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+      <CategoriesNav categorias={categorias} pathname={pathname} />
 
       <Separator className="my-4" />
     </header>

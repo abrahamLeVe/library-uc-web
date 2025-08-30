@@ -1,3 +1,4 @@
+"use client";
 import { Calendar, Layers, Tag, User } from "lucide-react";
 
 export const menuListOptions = [
@@ -34,10 +35,13 @@ export const menuAuthOptions = [
     shortcut: "⌘L",
     icon: <User className="h-4 w-4" />,
   },
+];
+
+export const menuSessionOptions = [
   {
-    label: "Registrarse",
-    href: "/register",
-    shortcut: "⌘R",
-    icon: <Layers className="h-4 w-4" />,
+    label: "Dashboard",
+    href: "/dashboard",
+    shortcut: "⌘D",
+    icon: <User className="h-4 w-4" />,
   },
 ];
