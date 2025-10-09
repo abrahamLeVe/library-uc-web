@@ -1,46 +1,64 @@
+// lib/actions/books/fetch-books.ts
 import postgres from "postgres";
 import { Libros } from "../definitions";
+import { sql } from "../db";
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
-
-export async function fetchLibrosPorAnio(anio: string) {
-  try {
-    return await sql<Libros[]>`
-      SELECT 
-        'sin VP' AS vista_previa,
-        l.anio,
-        l.titulo,
-        STRING_AGG(DISTINCT a.nombre, ', ') AS autores,
-        c_hijo.nombre AS categoria_hija,
-        STRING_AGG(DISTINCT t.nombre, ', ') AS temas
-      FROM libros l
-      JOIN categorias c_hijo ON l.categoria_id = c_hijo.id
-      JOIN categorias c_padre ON c_hijo.parent_id = c_padre.id
-      LEFT JOIN libros_autores la ON l.id = la.libro_id
-      LEFT JOIN autores a ON la.autor_id = a.id
-      LEFT JOIN libros_temas lt ON l.id = lt.libro_id
-      LEFT JOIN temas t ON lt.tema_id = t.id
-      WHERE l.anio = ${anio}
-      GROUP BY l.id, c_hijo.nombre, l.anio, l.titulo
-      ORDER BY l.anio DESC, l.titulo ASC
-    `;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch books by year.");
-  }
-}
-
-export async function fetchAnios() {
+/**
+ * Traer todos los años disponibles de los libros
+ */
+export async function fetchAnios(): Promise<number[]> {
   try {
     const result = await sql<{ anio: number }[]>`
-      SELECT DISTINCT l.anio
-      FROM libros l
-      WHERE l.anio IS NOT NULL
-      ORDER BY l.anio DESC
+      SELECT DISTINCT anio_publicacion AS anio
+      FROM libros
+      WHERE anio_publicacion IS NOT NULL
+      ORDER BY anio_publicacion DESC
     `;
     return result.map((row) => row.anio);
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error("Database Error (fetchAnios):", error);
     throw new Error("Failed to fetch years.");
+  }
+}
+
+/**
+ * Traer libros filtrados por año
+ */
+export async function fetchLibrosPorAnio(anio: string): Promise<Libros[]> {
+  const anioNum = parseInt(anio);
+
+  try {
+    const data = await sql<Libros[]>`
+      SELECT
+        'sin VP' AS vista_previa,
+        l.id,
+        l.anio_publicacion,
+        l.titulo,
+        l.descripcion,
+        l.isbn,
+        l.editorial,
+        l.idioma,
+        l.paginas,
+        l.pdf_url,
+        l.examen_pdf_url,
+        l.imagen,
+        STRING_AGG(DISTINCT a.nombre, ', ') AS autores,
+        f.nombre AS facultad,
+        c.nombre AS carrera,
+        e.nombre AS especialidad
+      FROM libros l
+      LEFT JOIN libros_autores la ON l.id = la.libro_id
+      LEFT JOIN autores a ON la.autor_id = a.id
+      LEFT JOIN facultades f ON l.facultad_id = f.id
+      LEFT JOIN carreras c ON l.carrera_id = c.id
+      LEFT JOIN especialidades e ON l.especialidad_id = e.id
+      WHERE l.anio_publicacion = ${anioNum}
+      GROUP BY l.id, f.nombre, c.nombre, e.nombre
+      ORDER BY l.anio_publicacion DESC, l.titulo ASC
+    `;
+    return data;
+  } catch (error) {
+    console.error("Database Error (fetchLibrosPorAnio):", error);
+    throw new Error("Failed to fetch books by year.");
   }
 }

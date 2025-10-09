@@ -1,79 +1,90 @@
-import postgres from "postgres";
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
+import { sql } from "../db";
+import { Libros } from "../definitions";
 
 const ITEMS_PER_PAGE = 8;
 
-export async function fetchFilteredBooks(query: string, currentPage: number) {
+/**
+ * Búsqueda global de libros con paginación
+ */
+export async function fetchFilteredBooksGlobal(
+  query: string,
+  currentPage: number
+): Promise<Libros[]> {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const libros = await sql`
+    const results = await sql<Libros[]>`
       SELECT
-        libros.id,
-        libros.codigo,
-        'Sin VP' AS vista_previa, -- valor fijo porque la columna no existe
-        COALESCE(libros.anio::text, '-') AS anio,
-        libros.titulo,
-        COALESCE(STRING_AGG(DISTINCT a.nombre, ', '), 'Sin autores') AS autores,
-        c.nombre AS categoria_hija,
-        COALESCE(STRING_AGG(DISTINCT t.nombre, ', '), 'Sin temas') AS temas,
-        cp.nombre AS categoria_padre
-      FROM libros
-      JOIN categorias c ON libros.categoria_id = c.id
-      LEFT JOIN categorias cp ON c.parent_id = cp.id
-      LEFT JOIN libros_autores la ON libros.id = la.libro_id
+        'Sin VP' AS vista_previa,
+        l.id,
+        l.titulo,
+        l.descripcion,
+        l.isbn,
+        l.anio_publicacion,
+        l.editorial,
+        l.idioma,
+        l.paginas,
+        l.pdf_url,
+        l.examen_pdf_url,
+        l.imagen,
+        COALESCE(f.nombre, '-') AS facultad,
+        COALESCE(c.nombre, '-') AS carrera,
+        COALESCE(e.nombre, '-') AS especialidad,
+        COALESCE(STRING_AGG(DISTINCT a.nombre, ', '), 'Sin autores') AS autores
+      FROM libros l
+      LEFT JOIN facultades f ON l.facultad_id = f.id
+      LEFT JOIN carreras c ON l.carrera_id = c.id
+      LEFT JOIN especialidades e ON l.especialidad_id = e.id
+      LEFT JOIN libros_autores la ON l.id = la.libro_id
       LEFT JOIN autores a ON la.autor_id = a.id
-      LEFT JOIN libros_temas lt ON libros.id = lt.libro_id
-      LEFT JOIN temas t ON lt.tema_id = t.id
       WHERE
-        libros.anio::text ILIKE ${`%${query}%`} OR
-        libros.titulo ILIKE ${`%${query}%`} OR
-        a.nombre ILIKE ${`%${query}%`} OR
+        l.titulo ILIKE ${`%${query}%`} OR
+        l.descripcion ILIKE ${`%${query}%`} OR
+        l.isbn ILIKE ${`%${query}%`} OR
+        f.nombre ILIKE ${`%${query}%`} OR
         c.nombre ILIKE ${`%${query}%`} OR
-        cp.nombre ILIKE ${`%${query}%`} OR
-        t.nombre ILIKE ${`%${query}%`}
-      GROUP BY
-        libros.id, libros.codigo, libros.anio,
-        libros.titulo, c.nombre, cp.nombre
-      ORDER BY libros.codigo ASC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset};
+        e.nombre ILIKE ${`%${query}%`} OR
+        a.nombre ILIKE ${`%${query}%`}
+      GROUP BY l.id, f.nombre, c.nombre, e.nombre
+      ORDER BY l.id ASC
+      LIMIT ${ITEMS_PER_PAGE}
+      OFFSET ${offset};
     `;
 
-    return libros;
+    return results;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch filtered books.");
+    console.error("Database Error (fetchFilteredBooksGlobal):", error);
+    throw new Error("Failed to fetch filtered books globally.");
   }
 }
 
 /**
- * Total de páginas según la búsqueda
+ * Contar total de páginas según búsqueda global
  */
-export async function fetchBooksPages(query: string) {
+export async function fetchBooksGlobalPages(query: string): Promise<number> {
   try {
-    const countResult = await sql`
-      SELECT COUNT(DISTINCT libros.id) AS total
-      FROM libros
-      JOIN categorias c ON libros.categoria_id = c.id
-      LEFT JOIN categorias cp ON c.parent_id = cp.id
-      LEFT JOIN libros_autores la ON libros.id = la.libro_id
+    const countResult = await sql<{ total: number }[]>`
+      SELECT COUNT(DISTINCT l.id) AS total
+      FROM libros l
+      LEFT JOIN facultades f ON l.facultad_id = f.id
+      LEFT JOIN carreras c ON l.carrera_id = c.id
+      LEFT JOIN especialidades e ON l.especialidad_id = e.id
+      LEFT JOIN libros_autores la ON l.id = la.libro_id
       LEFT JOIN autores a ON la.autor_id = a.id
-      LEFT JOIN libros_temas lt ON libros.id = lt.libro_id
-      LEFT JOIN temas t ON lt.tema_id = t.id
       WHERE
-        libros.anio::text ILIKE ${`%${query}%`} OR
-        libros.titulo ILIKE ${`%${query}%`} OR
-        a.nombre ILIKE ${`%${query}%`} OR
+        l.titulo ILIKE ${`%${query}%`} OR
+        l.descripcion ILIKE ${`%${query}%`} OR
+        l.isbn ILIKE ${`%${query}%`} OR
+        f.nombre ILIKE ${`%${query}%`} OR
         c.nombre ILIKE ${`%${query}%`} OR
-        cp.nombre ILIKE ${`%${query}%`} OR
-        t.nombre ILIKE ${`%${query}%`};
+        e.nombre ILIKE ${`%${query}%`} OR
+        a.nombre ILIKE ${`%${query}%`};
     `;
 
     const total = Number(countResult[0]?.total || 0);
     return Math.ceil(total / ITEMS_PER_PAGE);
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to count books pages.");
+    console.error("Database Error (fetchBooksGlobalPages):", error);
+    throw new Error("Failed to count global books pages.");
   }
 }

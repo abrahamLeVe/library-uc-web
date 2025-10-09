@@ -3,17 +3,25 @@ import { Entity, FetchEntityOptions, LibroPorAnio } from "../definitions";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
+/**
+ * Entidades genéricas con total de libros (facultad, carrera, especialidad, autor)
+ */
 export async function fetchEntityConLibrosAll({
   table,
   joinTable,
   joinColumn,
 }: FetchEntityOptions): Promise<Entity[]> {
   try {
+    // Definir la columna que vamos a contar según la tabla
+    let countColumn = "id"; // default
+    if (table === "autores") countColumn = "libro_id";
+    else countColumn = "id"; // para facultades, carreras, especialidades
+
     const data = await sql<Entity[]>`
       SELECT 
         e.id,
         e.nombre,
-        COUNT(le.libro_id) AS total_libros
+        COUNT(le.${sql(countColumn)}) AS total_libros
       FROM ${sql(table)} e
       LEFT JOIN ${sql(joinTable)} le 
         ON e.id = le.${sql(joinColumn)}
@@ -23,55 +31,32 @@ export async function fetchEntityConLibrosAll({
 
     return data;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error(`❌ Failed to fetch all ${table}.`);
+    console.error("❌ Database Error (fetchEntityConLibrosAll):", error);
+    throw new Error(`Failed to fetch all ${table}.`);
   }
 }
 
+/**
+ * Libros agrupados por año
+ */
 export async function fetchLibrosPorAnioAll(): Promise<Entity[]> {
   try {
     const data = await sql<LibroPorAnio[]>`
       SELECT 
-        COALESCE(anio, 'Sin año') AS anio,
+        COALESCE(anio_publicacion::text, 'Sin año') AS anio,
         COUNT(*) AS total_libros
       FROM libros
-      GROUP BY anio
-      ORDER BY anio DESC;
+      GROUP BY anio_publicacion
+      ORDER BY anio_publicacion DESC NULLS LAST;
     `;
 
     return data.map((item) => ({
-      id: Number(item.anio),
+      id: item.anio,
       nombre: item.anio,
       total_libros: item.total_libros,
     }));
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("❌ Failed to fetch all libros por año.");
-  }
-}
-
-export async function fetchLibrosPorCategoriaAll(): Promise<Entity[]> {
-  try {
-    const data = await sql<Entity[]>`
-      SELECT 
-        c.id,
-        c.nombre,
-        COUNT(l.id) AS total_libros
-      FROM categorias c
-      JOIN libros l ON l.categoria_id = c.id
-      WHERE c.parent_id IS NOT NULL -- Solo categorías que no son padre
-      GROUP BY c.id, c.nombre
-      HAVING COUNT(l.id) > 0 -- 🔑 solo categorías con libros
-      ORDER BY total_libros DESC, c.nombre ASC;
-    `;
-
-    return data.map((item) => ({
-      id: item.id,
-      nombre: item.nombre,
-      total_libros: item.total_libros,
-    }));
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("❌ Failed to fetch all libros por categoría.");
+    console.error("❌ Database Error (fetchLibrosPorAnioAll):", error);
+    throw new Error("Failed to fetch libros por año.");
   }
 }

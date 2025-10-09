@@ -3,7 +3,7 @@ import Pagination from "@/components/search/pagination";
 import Search from "@/components/search/search";
 
 import SearchTable from "@/components/search/table";
-import { fetchBooksPages } from "@/lib/data/search.data";
+import { fetchBooksGlobalPages } from "@/lib/data/search.data";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -20,7 +20,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchBooksPages(query);
+  const totalPages = await fetchBooksGlobalPages(query);
 
   return (
     <>

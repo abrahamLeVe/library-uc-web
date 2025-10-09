@@ -1,34 +1,32 @@
 "use client";
 
-import { Categoria } from "@/lib/definitions";
+import { Facultad } from "@/lib/definitions";
 import { cn } from "@/lib/utils";
-import { HomeIcon, Search, User } from "lucide-react";
-import { Session } from "next-auth";
+import { HomeIcon, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "../common/toggle";
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
-import { CategoriesNav } from "./categories-nav";
+import { FacultadesNav } from "./categories-nav";
 import { DropdownMenuGeneric } from "./drop-down";
-import { menuListOptions, menuSessionOptions } from "./menu-options";
+import { menuListOptions } from "./menu-options";
 import MobileMenu from "./mobile-menu";
 
 interface HeaderNavProps {
-  categorias: Categoria[];
-  session: Session | null;
+  facultades: Facultad[];
 }
 
-export default function HeaderNav({ categorias, session }: HeaderNavProps) {
+export default function HeaderNav({ facultades }: HeaderNavProps) {
   const pathname = usePathname();
 
   const isExactPath = (href: string) => pathname === href;
-
   const variantForPath = (href: string) =>
     isExactPath(href) ? "default" : "outline";
 
   return (
     <header>
+      {/* Navbar superior */}
       <nav className="sticky top-0 z-50 bg-gray-950 shadow-xs">
         <div className="container flex flex-wrap items-center justify-between md:h-14 p-1 m-auto gap-2">
           <div className="flex gap-2">
@@ -54,23 +52,6 @@ export default function HeaderNav({ categorias, session }: HeaderNavProps) {
           </div>
 
           <div className="flex gap-2">
-            {/* Search */}
-            {session ? (
-              <DropdownMenuGeneric
-                triggerLabel="Mi cuenta"
-                menuLabel="Opciones de cuenta"
-                options={menuSessionOptions}
-                session={session}
-              />
-            ) : (
-              <Link
-                href="/login"
-                className={cn(buttonVariants({ variant: "outline" }))}
-              >
-                <User size={18} />
-                <span className="hidden sm:block">Mi cuenta</span>
-              </Link>
-            )}
             <Link
               href="/search"
               className={cn(
@@ -91,7 +72,8 @@ export default function HeaderNav({ categorias, session }: HeaderNavProps) {
         </div>
       </nav>
 
-      <CategoriesNav categorias={categorias} pathname={pathname} />
+      {/* Facultades Nav */}
+      <FacultadesNav facultades={facultades} pathname={pathname} />
 
       <Separator className="my-4" />
     </header>

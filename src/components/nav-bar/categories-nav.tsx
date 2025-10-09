@@ -1,17 +1,22 @@
 "use client";
-import { Categoria } from "@/lib/definitions";
+
+import { Facultad } from "@/lib/definitions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
-interface HeaderNavProps {
-  categorias: Categoria[];
+import { Badge } from "../ui/badge";
+
+interface FacultadesNavProps {
+  facultades: Facultad[];
   pathname: string;
 }
-export function CategoriesNav({ categorias, pathname }: HeaderNavProps) {
+
+export function FacultadesNav({ facultades, pathname }: FacultadesNavProps) {
   const isExactPath = (href: string) => pathname === href;
 
   const variantForPath = (href: string) =>
     isExactPath(href) ? "default" : "outline";
+
   return (
     <div className="container flex flex-col lg:h-52 m-auto gap-2 p-2">
       <div className="flex items-end justify-between md:h-20">
@@ -20,20 +25,23 @@ export function CategoriesNav({ categorias, pathname }: HeaderNavProps) {
         </h1>
       </div>
 
-      {/* Categorías */}
+      {/* Facultades */}
       <div className="flex flex-wrap items-center lg:h-28 gap-2">
-        {categorias.map((categoria) => {
-          const href = `/category/${categoria.id}`;
+        {facultades.map((fac) => {
+          const href = `/faculty/${fac.id}`;
           return (
             <Link
-              key={categoria.id}
+              key={fac.id}
               href={href}
               className={cn(
                 buttonVariants({ variant: variantForPath(href) }),
                 isExactPath(href) && "pointer-events-none cursor-not-allowed"
               )}
             >
-              {categoria.nombre}
+              {fac.nombre}
+              <Badge variant="secondary" className="ml-2">
+                {fac.total_libros && fac.total_libros}
+              </Badge>
             </Link>
           );
         })}

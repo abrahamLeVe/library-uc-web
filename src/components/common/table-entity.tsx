@@ -14,11 +14,13 @@ import {
 } from "../ui/table";
 import { ClientPagination } from "./client-pagination";
 import { TableNoResults } from "./table-no-results";
+import { buttonVariants } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 interface TableEntityProps {
   titleCol: string;
   basePath: string;
-  data: { id: number; nombre: string; total_libros: number }[];
+  data: { id: string | number; nombre: string; total_libros: number }[]; // 🔹 id puede ser string o number
 }
 
 export default function TableEntity({
@@ -81,13 +83,12 @@ export default function TableEntity({
                   {item.nombre}
                 </TableCell>
                 <TableCell className="px-4 py-2">
-                  <Badge asChild>
-                    <Link
-                      href={`${basePath}/${isNaN(item.id) ? "SF" : item.id}`}
-                    >
-                      {item.total_libros}
-                    </Link>
-                  </Badge>
+                  <Link
+                    href={`${basePath}/${item.id.toString()}`} // 🔹 convertir id a string
+                    className={cn(buttonVariants({ variant: "default" }))}
+                  >
+                    {item.total_libros}
+                  </Link>
                 </TableCell>
               </TableRow>
             ))
@@ -96,6 +97,7 @@ export default function TableEntity({
           )}
         </TableBody>
       </Table>
+
       {/* Paginación */}
       {totalPages > 1 && (
         <div className="flex justify-center p-3 border-t">

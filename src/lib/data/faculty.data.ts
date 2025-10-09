@@ -1,30 +1,27 @@
 import { sql } from "../db";
-import { Autor, Libros } from "../definitions";
+import { Libros } from "../definitions";
 
 /**
- * Traer todos los autores
+ * Traer todas las facultades
  */
-export async function fetchAutores(): Promise<Autor[]> {
+export async function fetchFacultades() {
   try {
-    const data = await sql<Autor[]>`
-      SELECT 
-        id,
-        nombre,
-        nacionalidad
-      FROM autores
+    const data = await sql<{ id: number; nombre: string }[]>`
+      SELECT id, nombre
+      FROM facultades
       ORDER BY nombre ASC
     `;
     return data;
   } catch (error) {
-    console.error("Database Error (fetchAutores):", error);
-    throw new Error("Failed to fetch authors.");
+    console.error("Database Error (fetchFacultades):", error);
+    throw new Error("Failed to fetch faculties.");
   }
 }
 
 /**
- * Traer libros filtrados por autor
+ * Traer libros filtrados por facultad
  */
-export async function fetchLibrosPorAutor(autorId: number) {
+export async function fetchLibrosPorFacultad(facultadId: number) {
   try {
     const data = await sql<Libros[]>`
       SELECT
@@ -50,13 +47,13 @@ export async function fetchLibrosPorAutor(autorId: number) {
       LEFT JOIN facultades f ON l.facultad_id = f.id
       LEFT JOIN carreras c ON l.carrera_id = c.id
       LEFT JOIN especialidades e ON l.especialidad_id = e.id
-      WHERE la.autor_id = ${autorId}
+      WHERE l.facultad_id = ${facultadId}
       GROUP BY l.id, f.nombre, c.nombre, e.nombre
       ORDER BY l.anio_publicacion DESC, l.titulo ASC
     `;
     return data;
   } catch (error) {
-    console.error("Database Error (fetchLibrosPorAutor):", error);
-    throw new Error("Failed to fetch books by author.");
+    console.error("Database Error (fetchLibrosPorFacultad):", error);
+    throw new Error("Failed to fetch books by faculty.");
   }
 }

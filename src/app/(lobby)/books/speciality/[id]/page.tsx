@@ -1,34 +1,35 @@
 import LibrosTable from "@/components/common/libros-table";
 import { LibrosTableSkeleton } from "@/components/common/skeleton-entity";
 import {
-  fetchCategoriasPadreId,
-  fetchLibrosPorCategoriaPadre,
-} from "@/lib/data/category.data";
-import { Metadata } from "next";
+  fetchEspecialidades,
+  fetchLibrosPorEspecialidad,
+} from "@/lib/data/speciality.data";
 import { Suspense } from "react";
-
-export const metadata: Metadata = {
-  title: "Libros por categoría",
-};
 
 export const revalidate = 60;
 
+/**
+ * Generar rutas estáticas para cada especialidad
+ */
 export async function generateStaticParams() {
-  const categoriasPadre = await fetchCategoriasPadreId();
+  const especialidades = await fetchEspecialidades();
 
-  return categoriasPadre.map((categoria) => ({
-    id: categoria.id.toString(),
+  return especialidades.map((especialidad) => ({
+    id: especialidad.id.toString(),
   }));
 }
 
+/**
+ * Página de libros filtrados por especialidad
+ */
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
 
-  const libros = await fetchLibrosPorCategoriaPadre(Number(id));
+  const libros = await fetchLibrosPorEspecialidad(Number(id));
 
   return (
     <>
-      <h2 className="text-xl md:text-2xl pb-1">Libros por categoría</h2>
+      <h1 className="text-xl font-bold mb-4">Libros por sub categoría</h1>
       <Suspense fallback={<LibrosTableSkeleton />}>
         <LibrosTable libros={libros} />
       </Suspense>

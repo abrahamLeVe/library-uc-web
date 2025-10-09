@@ -15,15 +15,15 @@ export const menuListOptions = [
     icon: <User className="h-4 w-4" />,
   },
   {
-    label: "Sub categoría",
-    href: "/books/sub-category",
-    shortcut: "⌘S",
+    label: "Carrera",
+    href: "/books/career",
+    shortcut: "⌘C",
     icon: <Layers className="h-4 w-4" />,
   },
   {
-    label: "Tema",
-    href: "/books/theme",
-    shortcut: "⌘T",
+    label: "Especialidad",
+    href: "/books/specialty",
+    shortcut: "⌘E",
     icon: <Tag className="h-4 w-4" />,
   },
 ];

@@ -5,27 +5,27 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Libros por tema",
+  title: "Libros por carrera",
 };
 
 export const revalidate = 60;
 
 export default async function Page() {
-  const temasData = await fetchEntityConLibrosAll({
-    table: "temas",
-    joinTable: "libros_temas",
-    joinColumn: "tema_id",
+  const carrerasData = await fetchEntityConLibrosAll({
+    table: "carreras",
+    joinTable: "libros",
+    joinColumn: "carrera_id",
   });
 
   return (
     <>
-      <h2 className="text-xl md:text-2xl pb-1">Buscar por tema</h2>
+      <h2 className="text-xl md:text-2xl pb-1">Buscar por Carrera</h2>
       <div className="flex justify-center">
-        <Suspense fallback={<TableSkeleton col1="Tema" />}>
+        <Suspense fallback={<TableSkeleton col1="Carrera" />}>
           <TableEntity
-            titleCol="Tema"
-            basePath="/books/theme"
-            data={temasData}
+            titleCol="Carrera"
+            basePath="/books/career"
+            data={carrerasData}
           />
         </Suspense>
       </div>

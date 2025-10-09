@@ -1,15 +1,15 @@
-import { auth } from "@/auth";
-import { fetchCategoriasPadre } from "@/lib/data/category.data";
+import { fetchFacultades } from "@/lib/data/facultad.data";
 import HeaderNav from "./header-nav";
 
 export const revalidate = 60;
 
 export default async function HeaderMain() {
-  const categorias = await fetchCategoriasPadre();
-  const session = await auth();
+  // Traemos las facultades desde la DB
+  const facultades = await fetchFacultades();
+
   return (
     <>
-      <HeaderNav categorias={categorias} session={session} />
+      <HeaderNav facultades={facultades} />
     </>
   );
 }

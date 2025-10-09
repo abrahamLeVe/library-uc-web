@@ -1,29 +1,26 @@
 import LibrosTable from "@/components/common/libros-table";
 import { LibrosTableSkeleton } from "@/components/common/skeleton-entity";
-import {
-  fetchCategoriasHijasId,
-  fetchLibrosPorCategoriaHija,
-} from "@/lib/data/sub-category.data";
+import { fetchCarreras, fetchLibrosPorCarrera } from "@/lib/data/career.data";
 import { Suspense } from "react";
 
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const categoriasHijas = await fetchCategoriasHijasId();
+  const carreras = await fetchCarreras();
 
-  return categoriasHijas.map((categoria) => ({
-    id: categoria.id.toString(),
+  return carreras.map((carrera) => ({
+    id: carrera.id.toString(),
   }));
 }
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
 
-  const libros = await fetchLibrosPorCategoriaHija(Number(id));
+  const libros = await fetchLibrosPorCarrera(Number(id));
 
   return (
     <>
-      <h1 className="text-xl font-bold mb-4 hi">Libros por sub categoría</h1>
+      <h1 className="text-xl font-bold mb-4">Libros por Carrera</h1>
       <Suspense fallback={<LibrosTableSkeleton />}>
         <LibrosTable libros={libros} />
       </Suspense>

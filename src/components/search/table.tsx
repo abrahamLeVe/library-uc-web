@@ -1,4 +1,4 @@
-import { fetchFilteredBooks } from "@/lib/data/search.data";
+import { fetchFilteredBooksGlobal } from "@/lib/data/search.data";
 import {
   Table,
   TableBody,
@@ -9,17 +9,17 @@ import {
 } from "../ui/table";
 import { TableNoResults } from "../common/table-no-results";
 
-export default async function SearchTable({
+export default async function SearchTableGlobal({
   query,
   currentPage,
 }: {
   query: string;
   currentPage: number;
 }) {
-  const libros = await fetchFilteredBooks(query, currentPage);
+  const libros = await fetchFilteredBooksGlobal(query, currentPage);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -27,8 +27,11 @@ export default async function SearchTable({
             <TableHead>Año</TableHead>
             <TableHead>Título</TableHead>
             <TableHead>Autores</TableHead>
-            <TableHead>Sub categoría</TableHead>
-            <TableHead>Temas</TableHead>
+            <TableHead>Facultad</TableHead>
+            <TableHead>Carrera</TableHead>
+            <TableHead>Especialidad</TableHead>
+            <TableHead>PDF</TableHead>
+            <TableHead>Examen PDF</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -37,12 +40,70 @@ export default async function SearchTable({
           ) : (
             libros.map((libro, i) => (
               <TableRow key={i}>
-                <TableCell>{libro.vista_previa}</TableCell>
-                <TableCell>{libro.anio ?? "-"}</TableCell>
+                {/* Vista previa como imagen */}
+                <TableCell>
+                  {libro.imagen ? (
+                    <img
+                      src={libro.imagen}
+                      alt={libro.titulo}
+                      className="w-16 h-20 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-16 h-20 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                      Sin imagen
+                    </div>
+                  )}
+                </TableCell>
+
+                {/* Año */}
+                <TableCell>{libro.anio_publicacion ?? "-"}</TableCell>
+
+                {/* Título */}
                 <TableCell>{libro.titulo}</TableCell>
+
+                {/* Autores */}
                 <TableCell>{libro.autores ?? "-"}</TableCell>
-                <TableCell>{libro.categoria_hija}</TableCell>
-                <TableCell>{libro.temas ?? "-"}</TableCell>
+
+                {/* Facultad */}
+                <TableCell>{libro.facultad ?? "-"}</TableCell>
+
+                {/* Carrera */}
+                <TableCell>{libro.carrera ?? "-"}</TableCell>
+
+                {/* Especialidad */}
+                <TableCell>{libro.especialidad ?? "-"}</TableCell>
+
+                {/* PDF */}
+                <TableCell>
+                  {libro.pdf_url ? (
+                    <a
+                      href={libro.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      PDF
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </TableCell>
+
+                {/* Examen PDF */}
+                <TableCell>
+                  {libro.examen_pdf_url ? (
+                    <a
+                      href={libro.examen_pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Examen
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </TableCell>
               </TableRow>
             ))
           )}

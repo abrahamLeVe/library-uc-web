@@ -3,78 +3,78 @@ import TableEntity from "@/components/common/table-entity";
 import {
   fetchEntityConLibrosAll,
   fetchLibrosPorAnioAll,
-  fetchLibrosPorCategoriaAll,
 } from "@/lib/data/entity.data";
+
 import { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Estadísticas de Libros",
+  title: "Estadísticas Académicas",
 };
 
 export const revalidate = 60;
 
-export default async function Home() {
-  const autoresData = await fetchEntityConLibrosAll({
-    table: "autores",
-    joinTable: "libros_autores",
-    joinColumn: "autor_id",
-  });
-
-  const temasData = await fetchEntityConLibrosAll({
-    table: "temas",
-    joinTable: "libros_temas",
-    joinColumn: "tema_id",
-  });
-
-  const aniosData = await fetchLibrosPorAnioAll();
-
-  const categoriesData = await fetchLibrosPorCategoriaAll();
+export default async function StatisticsPage() {
+  // 📊 Consultas paralelas
+  const [carrerasData, especialidadesData, autoresData, aniosData] =
+    await Promise.all([
+      fetchEntityConLibrosAll({
+        table: "carreras",
+        joinTable: "libros",
+        joinColumn: "carrera_id",
+      }),
+      fetchEntityConLibrosAll({
+        table: "especialidades",
+        joinTable: "libros",
+        joinColumn: "especialidad_id",
+      }),
+      fetchEntityConLibrosAll({
+        table: "autores",
+        joinTable: "libros_autores",
+        joinColumn: "autor_id",
+      }),
+      fetchLibrosPorAnioAll(),
+    ]);
 
   return (
-    <>
-      <div className="grid-cols-4">
-        <h2 className="text-xl md:text-2xl pb-1">Descubrir</h2>
-        <div
-          className="grid gap-4 
+    <div className="grid-cols-4">
+      <h2 className="text-xl md:text-2xl pb-1">Estadísticas de Biblioteca</h2>
+
+      <div
+        className="grid gap-4 
                  grid-cols-1 
                  sm:grid-cols-2 
                  lg:grid-cols-3 
                  xl:grid-cols-4"
-        >
-          <Suspense fallback={<TableSkeleton col1="Autor" />}>
-            <TableEntity
-              titleCol="Autor"
-              basePath="/books/author"
-              data={autoresData}
-            />
-          </Suspense>
+      >
+        <Suspense fallback={<TableSkeleton col1="Carrera" />}>
+          <TableEntity
+            titleCol="Carrera"
+            basePath="/books/career"
+            data={carrerasData}
+          />
+        </Suspense>
 
-          <Suspense fallback={<TableSkeleton col1="Tema" />}>
-            <TableEntity
-              titleCol="Tema"
-              basePath="/books/theme"
-              data={temasData}
-            />
-          </Suspense>
+        <Suspense fallback={<TableSkeleton col1="Especialidad" />}>
+          <TableEntity
+            titleCol="Especialidad"
+            basePath="/books/speciality"
+            data={especialidadesData}
+          />
+        </Suspense>
 
-          <Suspense fallback={<TableSkeleton col1="Año" />}>
-            <TableEntity
-              titleCol="Año"
-              basePath="/books/anio"
-              data={aniosData}
-            />
-          </Suspense>
+        <Suspense fallback={<TableSkeleton col1="Autor" />}>
+          <TableEntity
+            titleCol="Autor"
+            basePath="/books/author"
+            data={autoresData}
+          />
+        </Suspense>
 
-          <Suspense fallback={<TableSkeleton col1="Sub categoría" />}>
-            <TableEntity
-              titleCol="Sub categoría"
-              basePath="/books/sub-category"
-              data={categoriesData}
-            />
-          </Suspense>
-        </div>
+        <Suspense fallback={<TableSkeleton col1="Año" />}>
+          <TableEntity titleCol="Año" basePath="/books/anio" data={aniosData} />
+        </Suspense>
       </div>
-    </>
+    </div>
   );
 }

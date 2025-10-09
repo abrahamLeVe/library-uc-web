@@ -1,33 +1,70 @@
-export interface Categoria {
-  id: string;
-  codigo: string;
-  nombre: string;
-  parent_id?: string | null;
-  categoria_padre?: string | null;
-}
-
-export interface Libros {
-  vista_previa: string;
-  anio: number | null;
-  titulo: string;
-  autores: string | null;
-  categoria_hija: string;
-  temas: string | null;
-}
-
+// =============================
+// DEFINICIONES DE ENTIDADES
+// =============================
 export interface Entity {
-  id: number;
+  id: number | string;
   nombre: string;
   total_libros: number;
 }
 
 export interface FetchEntityOptions {
-  table: "autores" | "temas";
-  joinTable: "libros_autores" | "libros_temas";
-  joinColumn: "autor_id" | "tema_id";
+  table: string;
+  joinTable: string;
+  joinColumn: string;
 }
+
+// Para agrupar libros por año
 export interface LibroPorAnio {
-  id: string;
   anio: string;
   total_libros: number;
+}
+
+export interface Facultad {
+  id: number;
+  nombre: string;
+  total_libros?: number; // opcional si quieres mostrar libros por facultad
+}
+
+export interface Carrera {
+  id: number;
+  nombre: string;
+  facultad_id: number;
+}
+
+export interface Especialidad {
+  id: number;
+  nombre: string;
+  carrera_id: number;
+}
+
+export interface Autor {
+  id: number;
+  nombre: string;
+  nacionalidad: string;
+}
+
+export interface Libros {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  isbn: string;
+  anio_publicacion: number;
+  editorial: string;
+  idioma: string;
+  paginas: number;
+  palabras_clave: string[];
+  pdf_url: string;
+  examen_pdf_url: string;
+  imagen: string;
+  facultad_id: number;
+  carrera_id: number;
+  especialidad_id: number;
+  created_at: string;
+
+  // Campos adicionales para mostrar en la tabla
+  vista_previa?: string; // por defecto 'sin VP'
+  autores?: string; // lista de autores concatenados
+  facultad?: string; // nombre de la facultad
+  carrera?: string; // nombre de la carrera
+  especialidad?: string; // nombre de la especialidad
 }
