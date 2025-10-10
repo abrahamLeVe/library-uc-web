@@ -55,11 +55,12 @@ export interface Libros {
   palabras_clave: string[];
   pdf_url: string;
   examen_pdf_url: string;
-  imagen: string;
+  imagen: string | null; // URL de la imagen (puede ser null)
   facultad_id: number;
   carrera_id: number;
   especialidad_id: number;
   created_at: string;
+  video_url: string | null; // 👈 nuevo
 
   // Campos adicionales para mostrar en la tabla
   vista_previa?: string; // por defecto 'sin VP'

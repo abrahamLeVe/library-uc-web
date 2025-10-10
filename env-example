@@ -20,3 +20,6 @@ SMTP_HOST=smtp.gmail.com
 SMTP_USER=tu_correo@gmail.com
 SMTP_PASS=tu_contraseña_app
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+#docker build -t my-next-app .
+#docker run -d --name next-app -p 3001:3000 --env-file .env my-next-app

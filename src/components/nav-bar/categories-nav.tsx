@@ -21,7 +21,7 @@ export function FacultadesNav({ facultades, pathname }: FacultadesNavProps) {
     <div className="container flex flex-col lg:h-52 m-auto gap-2 p-2">
       <div className="flex items-end justify-between md:h-20">
         <h1 className="text-2xl md:text-4xl font-semibold border-b pb-1">
-          Biblioteca Torres Lara
+          Biblioteca UC
         </h1>
       </div>
 

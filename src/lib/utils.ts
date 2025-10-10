@@ -37,3 +37,22 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+export function getYouTubeEmbedUrl(url: string | null) {
+  if (!url) return null;
+
+  // Maneja enlaces tipo watch?v=, live/, shorts/, etc.
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/live\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return `https://www.youtube.com/embed/${match[1]}`;
+    }
+  }
+
+  // Si no coincide con ningún patrón, devuelve el original
+  return url;
+}

@@ -36,6 +36,7 @@ export async function fetchLibroPorId(id: number): Promise<Libros | null> {
         l.pdf_url,
         l.examen_pdf_url,
         l.imagen,
+        l.video_url,
         COALESCE(f.nombre, '-') AS facultad,
         COALESCE(c.nombre, '-') AS carrera,
         COALESCE(e.nombre, '-') AS especialidad,

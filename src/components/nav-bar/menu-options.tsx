@@ -22,7 +22,7 @@ export const menuListOptions = [
   },
   {
     label: "Especialidad",
-    href: "/books/specialty",
+    href: "/books/speciality",
     shortcut: "⌘E",
     icon: <Tag className="h-4 w-4" />,
   },

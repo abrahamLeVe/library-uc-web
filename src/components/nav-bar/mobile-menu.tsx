@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   { label: "Fecha de publicación", href: "/books/anio" },
   { label: "Autor", href: "/books/author" },
-  { label: "Sub categoría", href: "/books/sub-category" },
-  { label: "Tema", href: "/books/theme" },
+  { label: "Carreras", href: "/books/career" },
+  { label: "Especialidades", href: "/books/speciality" },
 ];
 
 export default function MobileMenu() {

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { fetchFilteredBooksGlobal } from "@/lib/data/search.data";
 import {
   Table,
@@ -8,6 +9,8 @@ import {
   TableRow,
 } from "../ui/table";
 import { TableNoResults } from "../common/table-no-results";
+import { getPdfUrl } from "@/lib/s3";
+import { Libros } from "@/lib/definitions";
 
 export default async function SearchTableGlobal({
   query,
@@ -16,8 +19,21 @@ export default async function SearchTableGlobal({
   query: string;
   currentPage: number;
 }) {
+  // 1️⃣ Obtener libros desde la base de datos
   const libros = await fetchFilteredBooksGlobal(query, currentPage);
 
+  // 2️⃣ Generar solo la URL firmada de la imagen
+  const librosConImagen = await Promise.all(
+    libros.map(async (libro: Libros) => {
+      const imagen_url_signed = libro.imagen
+        ? await getPdfUrl(libro.imagen, 604800) // URL válida por 7 días
+        : null;
+
+      return { ...libro, imagen: imagen_url_signed };
+    })
+  );
+
+  // 3️⃣ Renderizar la tabla
   return (
     <div className="space-y-4 overflow-auto">
       <Table>
@@ -30,23 +46,22 @@ export default async function SearchTableGlobal({
             <TableHead>Facultad</TableHead>
             <TableHead>Carrera</TableHead>
             <TableHead>Especialidad</TableHead>
-            <TableHead>PDF</TableHead>
-            <TableHead>Examen PDF</TableHead>
+            <TableHead>Detalles</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {libros.length === 0 ? (
+          {librosConImagen.length === 0 ? (
             <TableNoResults />
           ) : (
-            libros.map((libro, i) => (
-              <TableRow key={i}>
-                {/* Vista previa como imagen */}
+            librosConImagen.map((libro: Libros) => (
+              <TableRow key={libro.id}>
+                {/* 🖼️ Vista previa */}
                 <TableCell>
                   {libro.imagen ? (
                     <img
                       src={libro.imagen}
                       alt={libro.titulo}
-                      className="w-16 h-20 object-cover rounded"
+                      className="w-16 h-20 object-cover rounded bg-gray-200"
                     />
                   ) : (
                     <div className="w-16 h-20 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
@@ -55,54 +70,31 @@ export default async function SearchTableGlobal({
                   )}
                 </TableCell>
 
-                {/* Año */}
                 <TableCell>{libro.anio_publicacion ?? "-"}</TableCell>
 
-                {/* Título */}
-                <TableCell>{libro.titulo}</TableCell>
-
-                {/* Autores */}
-                <TableCell>{libro.autores ?? "-"}</TableCell>
-
-                {/* Facultad */}
-                <TableCell>{libro.facultad ?? "-"}</TableCell>
-
-                {/* Carrera */}
-                <TableCell>{libro.carrera ?? "-"}</TableCell>
-
-                {/* Especialidad */}
-                <TableCell>{libro.especialidad ?? "-"}</TableCell>
-
-                {/* PDF */}
+                {/* 📘 Enlace al detalle */}
                 <TableCell>
-                  {libro.pdf_url ? (
-                    <a
-                      href={libro.pdf_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline"
-                    >
-                      PDF
-                    </a>
-                  ) : (
-                    "-"
-                  )}
+                  <Link
+                    href={`/book/${libro.id}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {libro.titulo}
+                  </Link>
                 </TableCell>
 
-                {/* Examen PDF */}
+                <TableCell>{libro.autores ?? "-"}</TableCell>
+                <TableCell>{libro.facultad ?? "-"}</TableCell>
+                <TableCell>{libro.carrera ?? "-"}</TableCell>
+                <TableCell>{libro.especialidad ?? "-"}</TableCell>
+
+                {/* 🔗 Ver detalle */}
                 <TableCell>
-                  {libro.examen_pdf_url ? (
-                    <a
-                      href={libro.examen_pdf_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline"
-                    >
-                      Examen
-                    </a>
-                  ) : (
-                    "-"
-                  )}
+                  <Link
+                    href={`/book/${libro.id}`}
+                    className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
+                  >
+                    Ver detalle
+                  </Link>
                 </TableCell>
               </TableRow>
             ))

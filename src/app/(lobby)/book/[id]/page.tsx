@@ -1,9 +1,11 @@
 import { fetchAllLibros, fetchLibroPorId } from "@/lib/data/book.data";
+import { getPdfUrl } from "@/lib/s3";
+import { getYouTubeEmbedUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 export async function generateStaticParams() {
   // Traer todos los IDs de libros
-  const libros = await fetchAllLibros(); // o una función que traiga todos los libros
+  const libros = await fetchAllLibros();
   return libros.map((libro) => ({ id: libro.id.toString() }));
 }
 
@@ -14,10 +16,22 @@ export const metadata: Metadata = {
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
   const libro = await fetchLibroPorId(Number(id));
-
   if (!libro) {
     return <p>Libro no encontrado.</p>;
   }
+  const embedUrl = getYouTubeEmbedUrl(libro.video_url);
+  // 👇 Generar URLs firmadas (válidas por 7 días)
+  const imagen_url_signed = libro.imagen
+    ? await getPdfUrl(libro.imagen, 604800)
+    : null;
+
+  const pdf_url_signed = libro.pdf_url
+    ? await getPdfUrl(libro.pdf_url, 604800)
+    : null;
+
+  const examen_url_signed = libro.examen_pdf_url
+    ? await getPdfUrl(libro.examen_pdf_url, 604800)
+    : null;
 
   return (
     <div className="space-y-6 p-4 md:p-8">
@@ -27,12 +41,12 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       {/* Contenedor principal */}
       <div className="flex flex-col md:flex-row gap-6">
         {/* Imagen */}
-        <div className="flex-shrink-0">
-          {libro.imagen ? (
+        <div className="flex-shrink-0 md:sticky top-1 h-full">
+          {imagen_url_signed ? (
             <img
-              src={libro.imagen}
+              src={imagen_url_signed}
               alt={libro.titulo}
-              className="w-64 h-auto rounded shadow"
+              className="w-64 h-auto rounded shadow bg-gray-200"
             />
           ) : (
             <div className="w-64 h-80 bg-gray-200 flex items-center justify-center text-gray-500">
@@ -43,7 +57,6 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
         {/* Información del libro */}
         <div className="flex-1 space-y-3">
-          {/* Datos generales */}
           <p>
             <span className="font-semibold">Año de publicación:</span>{" "}
             {libro.anio_publicacion ?? "-"}
@@ -87,9 +100,9 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
           {/* Descargas */}
           <div className="space-x-4 pt-2">
-            {libro.pdf_url && (
+            {pdf_url_signed && (
               <a
-                href={libro.pdf_url}
+                href={pdf_url_signed}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
@@ -97,17 +110,36 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
                 Descargar PDF
               </a>
             )}
-            {libro.examen_pdf_url && (
+            {examen_url_signed && (
               <a
-                href={libro.examen_pdf_url}
+                href={examen_url_signed}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
               >
-                Descargar Examen
+                Descargar Material
               </a>
             )}
           </div>
+
+          {/* Video de YouTube */}
+          {libro.video_url && (
+            <div className="mt-6">
+              <h2 className="font-semibold text-lg mb-2">Video relacionado:</h2>
+
+              {embedUrl && (
+                <div className="aspect-video rounded-xl overflow-hidden shadow-lg mt-4">
+                  <iframe
+                    src={embedUrl}
+                    title="Video relacionado"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -85,7 +85,7 @@ export default function LibrosTable({ libros }: LibrosTableProps) {
                     <img
                       src={libro.imagen}
                       alt={libro.titulo}
-                      className="w-16 h-20 object-cover rounded"
+                      className="w-16 h-20 object-cover rounded bg-gray-200"
                     />
                   ) : (
                     <div className="w-16 h-20 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">

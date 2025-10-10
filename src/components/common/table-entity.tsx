@@ -1,8 +1,9 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Badge } from "../ui/badge";
+import { buttonVariants } from "../ui/button";
 import { Input } from "../ui/input";
 import {
   Table,
@@ -14,8 +15,6 @@ import {
 } from "../ui/table";
 import { ClientPagination } from "./client-pagination";
 import { TableNoResults } from "./table-no-results";
-import { buttonVariants } from "../ui/button";
-import { cn } from "@/lib/utils";
 
 interface TableEntityProps {
   titleCol: string;
@@ -71,17 +70,14 @@ export default function TableEntity({
       <Table className="w-full border-collapse text-sm">
         <TableHeader>
           <TableRow>
-            <TableHead className="px-4 py-2 text-left">{titleCol}</TableHead>
             <TableHead className="px-4 py-2 text-left">Libros</TableHead>
+            <TableHead className="px-4 py-2 text-left">{titleCol}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedData.length > 0 ? (
             paginatedData.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="px-4 py-2 font-medium truncate">
-                  {item.nombre}
-                </TableCell>
                 <TableCell className="px-4 py-2">
                   <Link
                     href={`${basePath}/${item.id.toString()}`} // 🔹 convertir id a string
@@ -89,6 +85,9 @@ export default function TableEntity({
                   >
                     {item.total_libros}
                   </Link>
+                </TableCell>
+                <TableCell className="px-4 py-2 font-medium truncate">
+                  {item.nombre}
                 </TableCell>
               </TableRow>
             ))
