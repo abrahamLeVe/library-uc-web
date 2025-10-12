@@ -60,7 +60,7 @@ export interface Libros {
   carrera_id: number;
   especialidad_id: number;
   created_at: string;
-  video_url: string | null; // 👈 nuevo
+  video_urls: string[]; // 👈 nuevo
 
   // Campos adicionales para mostrar en la tabla
   vista_previa?: string; // por defecto 'sin VP'

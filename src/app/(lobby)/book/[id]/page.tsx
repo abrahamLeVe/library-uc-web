@@ -4,7 +4,6 @@ import { getYouTubeEmbedUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 export async function generateStaticParams() {
-  // Traer todos los IDs de libros
   const libros = await fetchAllLibros();
   return libros.map((libro) => ({ id: libro.id.toString() }));
 }
@@ -13,32 +12,33 @@ export const metadata: Metadata = {
   title: "Detalles del libro",
 };
 
+export const revalidate = 60;
+
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
   const libro = await fetchLibroPorId(Number(id));
-  if (!libro) {
-    return <p>Libro no encontrado.</p>;
-  }
-  const embedUrl = getYouTubeEmbedUrl(libro.video_url);
-  // 👇 Generar URLs firmadas (válidas por 7 días)
+  if (!libro) return <p>Libro no encontrado.</p>;
+
+  // URLs firmadas
   const imagen_url_signed = libro.imagen
     ? await getPdfUrl(libro.imagen, 604800)
     : null;
-
   const pdf_url_signed = libro.pdf_url
     ? await getPdfUrl(libro.pdf_url, 604800)
     : null;
-
   const examen_url_signed = libro.examen_pdf_url
     ? await getPdfUrl(libro.examen_pdf_url, 604800)
     : null;
 
+  // Generar URLs embebidas de YouTube
+  const embedUrls = (libro.video_urls || [])
+    .map((url) => getYouTubeEmbedUrl(url))
+    .filter(Boolean);
+
   return (
     <div className="space-y-6 p-4 md:p-8">
-      {/* Encabezado */}
       <h1 className="text-2xl md:text-4xl font-bold">{libro.titulo}</h1>
 
-      {/* Contenedor principal */}
       <div className="flex flex-col md:flex-row gap-6">
         {/* Imagen */}
         <div className="flex-shrink-0 md:sticky top-1 h-full">
@@ -122,22 +122,26 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
             )}
           </div>
 
-          {/* Video de YouTube */}
-          {libro.video_url && (
-            <div className="mt-6">
-              <h2 className="font-semibold text-lg mb-2">Video relacionado:</h2>
-
-              {embedUrl && (
-                <div className="aspect-video rounded-xl overflow-hidden shadow-lg mt-4">
+          {/* Videos de YouTube */}
+          {embedUrls.length > 0 && (
+            <div className="mt-6 space-y-6">
+              <h2 className="font-semibold text-lg mb-2">
+                Videos relacionados:
+              </h2>
+              {embedUrls.map((embedUrl, index) => (
+                <div
+                  key={index}
+                  className="aspect-video rounded-xl overflow-hidden shadow-lg"
+                >
                   <iframe
-                    src={embedUrl}
-                    title="Video relacionado"
+                    src={embedUrl || ""}
+                    title={`Video relacionado ${index + 1}`}
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   ></iframe>
                 </div>
-              )}
+              ))}
             </div>
           )}
         </div>

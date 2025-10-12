@@ -32,5 +32,5 @@ EXPOSE 3000
 CMD ["npm", "start"]
 
 
-#docker build -t my-next-app .
-#docker run -d --name next-app -p 3001:3000 --env-file .env my-next-app
+#docker build -t next_web_uc .
+#docker run -d --name next-app-web -p 3002:3000 --env-file .env next_web_uc
