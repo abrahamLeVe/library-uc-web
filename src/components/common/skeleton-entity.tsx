@@ -31,7 +31,7 @@ export function TableSkeleton({
     <div className="w-full md:max-w-lg border rounded-md">
       {/* Buscador skeleton */}
       <div className="p-3 border-b">
-        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-9 w-full" />
       </div>
       <Table className="w-full border-collapse text-sm">
         <TableHeader>
@@ -43,11 +43,14 @@ export function TableSkeleton({
         <TableBody>
           {Array.from({ length: rows }).map((_, i) => (
             <TableRow key={i}>
-              <TableCell className="px-4 py-2">
-                <Skeleton className="h-[22.3px] w-[150px]" />
+              {/* Columna Libros (botón pequeño) */}
+              <TableCell className="px-4 py-[6.9px]">
+                <Skeleton className="h-[39px] w-[39px] rounded-md" />
               </TableCell>
-              <TableCell className="px-4 py-2">
-                <Skeleton className="h-[22.3px] w-[30px]" />
+
+              {/* Columna Nombre (texto largo) */}
+              <TableCell className="px-4 py-[6.9px]">
+                <Skeleton className="h-[22px] w-[150px]" />
               </TableCell>
             </TableRow>
           ))}

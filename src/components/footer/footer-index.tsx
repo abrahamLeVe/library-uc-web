@@ -1,6 +1,8 @@
 import { fetchFacultades } from "@/lib/data/facultad.data";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "../ui/button";
 
 export default async function Footer() {
   const facultades = await fetchFacultades();
@@ -30,14 +32,14 @@ export default async function Footer() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Biblioteca UC</h3>
+                <h3 className="text-lg font-semibold">Biblioteca</h3>
                 <p className="text-sm text-muted-foreground">
                   Recursos académicos y libros.
                 </p>
               </div>
             </div>
 
-            <p className="mt-4 text-sm text-gray-600">
+            <p className="mt-4 text-sm">
               Accede a guías, PDFs y materiales seleccionados por facultad y
               carrera. Diseñado para estudiantes y profesores.
             </p>
@@ -47,10 +49,13 @@ export default async function Footer() {
           <div className="grid grid-cols-1 gap-6 md:col-span-2 md:grid-cols-3">
             <div>
               <h4 className="mb-3 text-sm font-semibold">Explorar</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-sm">
                 {menuItems.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className="hover:text-gray-900">
+                    <Link
+                      href={item.href}
+                      className={cn(buttonVariants({ variant: "link" }))}
+                    >
                       {item.label}
                     </Link>
                   </li>
@@ -60,12 +65,15 @@ export default async function Footer() {
 
             <div>
               <h4 className="mb-3 text-sm font-semibold">Facultades</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-sm">
                 {facultades.map((fac) => {
                   const href = `/faculty/${fac.id}`;
                   return (
                     <li key={fac.id}>
-                      <Link href={href} className="hover:text-gray-900">
+                      <Link
+                        href={href}
+                        className={cn(buttonVariants({ variant: "link" }))}
+                      >
                         {fac.nombre}
                         <Badge variant="secondary" className="ml-2">
                           {fac.total_libros && fac.total_libros}
@@ -83,7 +91,7 @@ export default async function Footer() {
 
         <div className="flex items-center justify-between border-t py-6 text-sm text-gray-500">
           <p>
-            © {new Date().getFullYear()} Biblioteca UC — Todos los derechos
+            © {new Date().getFullYear()} Biblioteca — Todos los derechos
             reservados
           </p>
         </div>

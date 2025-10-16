@@ -39,7 +39,6 @@ export default async function StatisticsPage() {
   return (
     <div className="grid-cols-4">
       <h2 className="text-xl md:text-2xl pb-1">Estadísticas de Biblioteca</h2>
-
       <div
         className="grid gap-4 
                  grid-cols-1 
@@ -47,7 +46,7 @@ export default async function StatisticsPage() {
                  lg:grid-cols-3 
                  xl:grid-cols-4"
       >
-        <Suspense fallback={<TableSkeleton col1="Carrera" />}>
+        <Suspense fallback={<TableSkeleton col2="Carrera" />}>
           <TableEntity
             titleCol="Carrera"
             basePath="/books/career"
@@ -55,15 +54,15 @@ export default async function StatisticsPage() {
           />
         </Suspense>
 
-        <Suspense fallback={<TableSkeleton col1="Especialidad" />}>
+        <Suspense fallback={<TableSkeleton col2="Especialidad" />}>
           <TableEntity
             titleCol="Especialidad"
             basePath="/books/speciality"
             data={especialidadesData}
           />
         </Suspense>
-
-        <Suspense fallback={<TableSkeleton col1="Autor" />}>
+        <TableSkeleton col2="Autor" />
+        <Suspense fallback={<TableSkeleton col2="Autor" />}>
           <TableEntity
             titleCol="Autor"
             basePath="/books/author"
@@ -71,7 +70,7 @@ export default async function StatisticsPage() {
           />
         </Suspense>
 
-        <Suspense fallback={<TableSkeleton col1="Año" />}>
+        <Suspense fallback={<TableSkeleton col2="Año" />}>
           <TableEntity titleCol="Año" basePath="/books/anio" data={aniosData} />
         </Suspense>
       </div>
