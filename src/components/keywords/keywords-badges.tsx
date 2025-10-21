@@ -4,8 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PalabraClaveFull } from "@/lib/definitions";
+import { XIcon } from "lucide-react";
 import Link from "next/link";
-import { SetStateAction, useMemo, useRef, useState } from "react";
+import { SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { ClientPagination } from "../common/client-pagination";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+import { Card, CardContent } from "../ui/card";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -13,9 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { XIcon } from "lucide-react";
-import { Label } from "../ui/label";
-import { Card } from "../ui/card";
 
 interface KeywordBadgesAdvancedProps {
   data: PalabraClaveFull[];
@@ -38,6 +45,9 @@ export function KeywordBadgesAdvanced({
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   const listRef = useRef<HTMLDivElement | null>(null);
+
+  // --- Paginación ---
+  const [currentPage, setCurrentPage] = useState(1);
 
   // --- Derived options for filters (dependent) ---
   const facultiesList = useMemo(() => {
@@ -130,20 +140,6 @@ export function KeywordBadgesAdvanced({
     setSortBy("popular");
   }
 
-  // scroll into view when "ver más" loads more
-  function handleVerMas() {
-    setVisibleCount((prev) => {
-      const next = prev + itemsPerPage;
-      // after state update, scroll to the previous last element smoothly
-      setTimeout(() => {
-        if (listRef.current) {
-          listRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-        }
-      }, 80);
-      return next;
-    });
-  }
-
   // small helpers to build chips
   const activeChips = [
     faculty
@@ -173,217 +169,232 @@ export function KeywordBadgesAdvanced({
     speciality !== null ||
     search.trim() !== "" ||
     sortBy !== "popular";
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filtered.slice(start, start + itemsPerPage);
+  }, [currentPage, filtered, itemsPerPage]);
 
+  // Resetear a página 1 cuando cambie cualquier filtro
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [letter, faculty, career, speciality, search, sortBy]);
   // --- Render ---
   return (
     <section className="mt-8 space-y-4">
       {/* Glass header */}
-      <Card className="md:sticky top-4 z-20 backdrop-blur-md bg-white/40 dark:bg-neutral-900/40 p-4">
-        <div className="flex flex-col md:flex-row items-start justify-between gap-4">
-          <div>
-            <h3 className="text-2xl  font-semibold">Palabras clave</h3>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              Explora por facultad, carrera o especialidad
-            </p>
-          </div>
 
-          <div className="flex flex-col md:flex-row md:items-center gap-3">
-            <Label className="flex gap-2 items-center">
-              Orden
-              <Select
-                name="orden"
-                value={sortBy}
-                onValueChange={(v) =>
-                  setSortBy(v as SetStateAction<"az" | "za" | "popular">)
-                }
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Ordenar por..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="popular">Más usadas</SelectItem>
-                  <SelectItem value="az">A - Z</SelectItem>
-                  <SelectItem value="za">Z - A</SelectItem>
-                </SelectContent>
-              </Select>
-            </Label>
-
-            <Button
-              variant={!hasFilters ? "outline" : "default"}
-              size="sm"
-              onClick={clearAll}
-              aria-label="Limpiar filtros"
-            >
-              Limpiar filtros
-            </Button>
-          </div>
+      <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+        <div>
+          <h3 className="text-2xl  font-semibold">Palabras clave</h3>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            Explora por facultad, carrera o especialidad
+          </p>
         </div>
-
-        {/* Filters row */}
-        <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex gap-2 flex-wrap items-center">
-            {/* Faculty */}
-            <Label className="flex flex-col items-start">
-              Facultad
-              <Select
-                name="facultad"
-                value={faculty ?? "all"}
-                onValueChange={(value) =>
-                  selectFaculty(value === "all" ? null : value)
-                }
-              >
-                <SelectTrigger className="min-w-[180px]">
-                  <SelectValue placeholder="Filtrar por facultad" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">— Todas —</SelectItem>
-                  {facultiesList.map((f) => (
-                    <SelectItem key={f} value={f}>
-                      {f}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Label>
-
-            {/* Career */}
-            <Label className="flex flex-col items-start">
-              Carrera
-              <Select
-                name="carrera"
-                value={career ?? "all"}
-                onValueChange={(value) =>
-                  selectCareer(value === "all" ? null : value)
-                }
-              >
-                <SelectTrigger className="min-w-[180px]">
-                  <SelectValue placeholder="Filtrar por carrera" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">— Todas —</SelectItem>
-                  {careersList.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Label>
-
-            {/* Speciality */}
-            <Label className="flex flex-col items-start">
-              Especialidad
-              <Select
-                name="especialidad"
-                value={speciality ?? "all"}
-                onValueChange={(value) => {
-                  setSpeciality(value === "all" ? null : value);
-                  setVisibleCount(itemsPerPage);
-                }}
-              >
-                <SelectTrigger className="min-w-[180px]">
-                  <SelectValue placeholder="Filtrar por especialidad" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">— Todas —</SelectItem>
-                  {specialitiesList.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Label>
-          </div>
-
-          {/* A-Z + search */}
-          <div className="flex flex-col gap-2 items-start md:items-end">
-            <div className="flex flex-wrap gap-1 items-center">
-              <Button
-                variant={!letter ? "default" : "outline"}
-                onClick={() => {
-                  setLetter(null);
-                  setVisibleCount(itemsPerPage);
-                }}
-                aria-label="Mostrar todos"
-              >
-                Todos
-              </Button>
-              {alphabet.map((ch) => {
-                const active = letter === ch;
-                return (
-                  <Button
-                    key={ch}
-                    variant={active ? "default" : "outline"}
-                    onClick={() => {
-                      setLetter(ch);
-                      setSearch("");
-                      setVisibleCount(itemsPerPage);
-                    }}
-                    aria-label={`Filtrar por letra ${ch}`}
-                  >
-                    {ch}
-                  </Button>
-                );
-              })}
-            </div>
-
-            <Label className="flex flex-col items-start">
-              Buscador
-              <Input
-                id="search-keyword"
-                name="search"
-                placeholder="Buscar palabra clave..."
-                type="search"
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setVisibleCount(itemsPerPage);
-                }}
-                className="min-w-[260px]"
-                aria-label="Buscar palabra clave"
-              />
-            </Label>
-          </div>
-        </div>
-
-        {/* Active chips */}
-        {activeChips.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {activeChips.map((c, i) => (
-              <Badge
-                key={i}
-                variant="outline"
-                className="px-3 py-1 cursor-pointer"
-                onClick={c.onRemove}
-              >
-                {c.label}
-                <XIcon />
-              </Badge>
-            ))}
-          </div>
-        )}
-      </Card>
-
-      {/* Result count */}
-      <div className="text-sm text-slate-600 dark:text-slate-400">
-        Mostrando{" "}
-        <strong className="text-slate-800 dark:text-slate-200">
-          {Math.min(filtered.length, visible.length)}
-        </strong>{" "}
-        de{" "}
-        <strong className="text-slate-800 dark:text-slate-200">
-          {filtered.length}
-        </strong>{" "}
-        palabras clave (total <strong>{data.length}</strong> en base)
       </div>
+
+      <Card className="bg-white/40 dark:bg-neutral-900/40 p-0">
+        <CardContent>
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            defaultValue="item-1"
+          >
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="justify-start">
+                Filtros — Mostrando {Math.min(filtered.length, visible.length)}{" "}
+                de {filtered.length} palabras clave (total en base)
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-4 text-balance">
+                {/* Filters row */}
+                <div className="mt-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div className="flex gap-2 flex-wrap items-center">
+                    {/* Faculty */}
+                    <Label className="flex flex-col items-start">
+                      Facultad
+                      <Select
+                        name="facultad"
+                        value={faculty ?? "all"}
+                        onValueChange={(value) =>
+                          selectFaculty(value === "all" ? null : value)
+                        }
+                      >
+                        <SelectTrigger className="min-w-[180px]">
+                          <SelectValue placeholder="Filtrar por facultad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">— Todas —</SelectItem>
+                          {facultiesList.map((f) => (
+                            <SelectItem key={f} value={f}>
+                              {f}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Label>
+
+                    {/* Career */}
+                    <Label className="flex flex-col items-start">
+                      Carrera
+                      <Select
+                        name="carrera"
+                        value={career ?? "all"}
+                        onValueChange={(value) =>
+                          selectCareer(value === "all" ? null : value)
+                        }
+                      >
+                        <SelectTrigger className="min-w-[180px]">
+                          <SelectValue placeholder="Filtrar por carrera" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">— Todas —</SelectItem>
+                          {careersList.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {c}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Label>
+
+                    {/* Speciality */}
+                    <Label className="flex flex-col items-start">
+                      Especialidad
+                      <Select
+                        name="especialidad"
+                        value={speciality ?? "all"}
+                        onValueChange={(value) => {
+                          setSpeciality(value === "all" ? null : value);
+                          setVisibleCount(itemsPerPage);
+                        }}
+                      >
+                        <SelectTrigger className="min-w-[180px]">
+                          <SelectValue placeholder="Filtrar por especialidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">— Todas —</SelectItem>
+                          {specialitiesList.map((s) => (
+                            <SelectItem key={s} value={s}>
+                              {s}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Label>
+                  </div>
+
+                  {/* A-Z + search */}
+                  <div className="flex flex-col gap-4 items-start md:items-end">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3">
+                      <Label className="flex gap-2 items-center">
+                        Orden
+                        <Select
+                          name="orden"
+                          value={sortBy}
+                          onValueChange={(v) =>
+                            setSortBy(
+                              v as SetStateAction<"az" | "za" | "popular">
+                            )
+                          }
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Ordenar por..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="popular">Más usadas</SelectItem>
+                            <SelectItem value="az">A - Z</SelectItem>
+                            <SelectItem value="za">Z - A</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </Label>
+
+                      <Button
+                        variant={!hasFilters ? "outline" : "default"}
+                        size="sm"
+                        onClick={clearAll}
+                        aria-label="Limpiar filtros"
+                      >
+                        Limpiar filtros
+                      </Button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <Button
+                        variant={!letter ? "default" : "outline"}
+                        onClick={() => {
+                          setLetter(null);
+                          setVisibleCount(itemsPerPage);
+                        }}
+                        aria-label="Mostrar todos"
+                      >
+                        Todos
+                      </Button>
+                      {alphabet.map((ch) => {
+                        const active = letter === ch;
+                        return (
+                          <Button
+                            key={ch}
+                            variant={active ? "default" : "outline"}
+                            onClick={() => {
+                              setLetter(ch);
+                              setSearch("");
+                              setVisibleCount(itemsPerPage);
+                            }}
+                            aria-label={`Filtrar por letra ${ch}`}
+                          >
+                            {ch}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Label className="flex flex-col items-start">
+                      Buscador
+                      <Input
+                        id="search-keyword"
+                        name="search"
+                        placeholder="Buscar palabra clave..."
+                        type="search"
+                        value={search}
+                        onChange={(e) => {
+                          setSearch(e.target.value);
+                          setVisibleCount(itemsPerPage);
+                        }}
+                        className="min-w-[260px]"
+                        aria-label="Buscar palabra clave"
+                      />
+                    </Label>
+                  </div>
+                </div>
+
+                {/* Active chips */}
+                {activeChips.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {activeChips.map((c, i) => (
+                      <Badge
+                        key={i}
+                        variant="outline"
+                        className="px-3 py-1 cursor-pointer"
+                        onClick={c.onRemove}
+                      >
+                        {c.label}
+                        <XIcon />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
 
       {/* Badges list */}
       <Card>
         <div ref={listRef} className="flex flex-wrap gap-2 px-2">
-          {visible.length > 0 ? (
-            visible.map((k) => {
-              // color strength by popularity
+          {paginated.length > 0 ? (
+            paginated.map((k) => {
               const t = k.total_libros ?? 0;
               const variantClass =
                 t >= 20
@@ -411,36 +422,15 @@ export function KeywordBadgesAdvanced({
         </div>
       </Card>
 
-      {/* Ver más / Paginación ligera */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-slate-600 dark:text-slate-400">
-          Página: <strong>{Math.ceil(visibleCount / itemsPerPage)}</strong>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4">
+          <ClientPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
-
-        <div className="flex gap-2">
-          {visibleCount < filtered.length && (
-            <Button variant="outline" onClick={handleVerMas}>
-              Ver más
-            </Button>
-          )}
-
-          {visibleCount > itemsPerPage && (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setVisibleCount(itemsPerPage);
-                // scroll to top of the list
-                listRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-              }}
-            >
-              Volver al inicio
-            </Button>
-          )}
-        </div>
-      </div>
+      )}
     </section>
   );
 }
