@@ -84,8 +84,6 @@ export default async function Footer() {
                 })}
               </ul>
             </div>
-
-            <div></div>
           </div>
         </div>
 

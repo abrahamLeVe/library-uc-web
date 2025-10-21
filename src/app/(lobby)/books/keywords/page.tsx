@@ -1,4 +1,4 @@
-import { KeywordBadgesAdvanced } from "@/components/common/keywords-badges";
+import { KeywordBadgesAdvanced } from "@/components/keywords/keywords-badges";
 import { TableSkeleton } from "@/components/common/skeleton-entity";
 import { fetchPalabrasClaveFullData } from "@/lib/data/Keywords.data";
 import { Metadata } from "next";

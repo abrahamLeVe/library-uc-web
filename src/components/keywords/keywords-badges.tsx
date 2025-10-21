@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { XIcon } from "lucide-react";
+import { Label } from "../ui/label";
+import { Card } from "../ui/card";
 
 interface KeywordBadgesAdvancedProps {
   data: PalabraClaveFull[];
@@ -164,12 +166,20 @@ export function KeywordBadgesAdvanced({
       : null,
   ].filter(Boolean) as { label: string; onRemove: () => void }[];
 
+  const hasFilters =
+    letter !== null ||
+    faculty !== null ||
+    career !== null ||
+    speciality !== null ||
+    search.trim() !== "" ||
+    sortBy !== "popular";
+
   // --- Render ---
   return (
     <section className="mt-8 space-y-4">
       {/* Glass header */}
-      <div className="sticky top-4 z-20 backdrop-blur-md bg-white/40 dark:bg-neutral-900/40 border border-slate-200/30 dark:border-slate-800/30 shadow-sm p-4 rounded-2xl">
-        <div className="flex items-start justify-between gap-4">
+      <Card className="md:sticky top-4 z-20 backdrop-blur-md bg-white/40 dark:bg-neutral-900/40 p-4">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-4">
           <div>
             <h3 className="text-2xl  font-semibold">Palabras clave</h3>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
@@ -177,12 +187,11 @@ export function KeywordBadgesAdvanced({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex gap-2 items-center">
-              <label className="text-sm text-slate-600 dark:text-slate-300 mr-1">
-                Orden
-              </label>
+          <div className="flex flex-col md:flex-row md:items-center gap-3">
+            <Label className="flex gap-2 items-center">
+              Orden
               <Select
+                name="orden"
                 value={sortBy}
                 onValueChange={(v) =>
                   setSortBy(v as SetStateAction<"az" | "za" | "popular">)
@@ -197,10 +206,10 @@ export function KeywordBadgesAdvanced({
                   <SelectItem value="za">Z - A</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </Label>
 
             <Button
-              variant="ghost"
+              variant={!hasFilters ? "outline" : "default"}
               size="sm"
               onClick={clearAll}
               aria-label="Limpiar filtros"
@@ -214,11 +223,10 @@ export function KeywordBadgesAdvanced({
         <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex gap-2 flex-wrap items-center">
             {/* Faculty */}
-            <div className="flex flex-col">
-              <label className="text-xs text-slate-600 dark:text-slate-300 mb-1">
-                Facultad
-              </label>
+            <Label className="flex flex-col items-start">
+              Facultad
               <Select
+                name="facultad"
                 value={faculty ?? "all"}
                 onValueChange={(value) =>
                   selectFaculty(value === "all" ? null : value)
@@ -236,14 +244,13 @@ export function KeywordBadgesAdvanced({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Label>
 
             {/* Career */}
-            <div className="flex flex-col">
-              <label className="text-xs text-slate-600 dark:text-slate-300 mb-1">
-                Carrera
-              </label>
+            <Label className="flex flex-col items-start">
+              Carrera
               <Select
+                name="carrera"
                 value={career ?? "all"}
                 onValueChange={(value) =>
                   selectCareer(value === "all" ? null : value)
@@ -261,14 +268,13 @@ export function KeywordBadgesAdvanced({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Label>
 
             {/* Speciality */}
-            <div className="flex flex-col">
-              <label className="text-xs text-slate-600 dark:text-slate-300 mb-1">
-                Especialidad
-              </label>
+            <Label className="flex flex-col items-start">
+              Especialidad
               <Select
+                name="especialidad"
                 value={speciality ?? "all"}
                 onValueChange={(value) => {
                   setSpeciality(value === "all" ? null : value);
@@ -287,14 +293,14 @@ export function KeywordBadgesAdvanced({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Label>
           </div>
 
           {/* A-Z + search */}
           <div className="flex flex-col gap-2 items-start md:items-end">
             <div className="flex flex-wrap gap-1 items-center">
               <Button
-                variant={!letter ? "outline" : "default"}
+                variant={!letter ? "default" : "outline"}
                 onClick={() => {
                   setLetter(null);
                   setVisibleCount(itemsPerPage);
@@ -308,7 +314,7 @@ export function KeywordBadgesAdvanced({
                 return (
                   <Button
                     key={ch}
-                    variant={active ? "outline" : "default"}
+                    variant={active ? "default" : "outline"}
                     onClick={() => {
                       setLetter(ch);
                       setSearch("");
@@ -322,9 +328,13 @@ export function KeywordBadgesAdvanced({
               })}
             </div>
 
-            <div className="flex items-center gap-2">
+            <Label className="flex flex-col items-start">
+              Buscador
               <Input
+                id="search-keyword"
+                name="search"
                 placeholder="Buscar palabra clave..."
+                type="search"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -333,7 +343,7 @@ export function KeywordBadgesAdvanced({
                 className="min-w-[260px]"
                 aria-label="Buscar palabra clave"
               />
-            </div>
+            </Label>
           </div>
         </div>
 
@@ -353,7 +363,7 @@ export function KeywordBadgesAdvanced({
             ))}
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Result count */}
       <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -369,38 +379,37 @@ export function KeywordBadgesAdvanced({
       </div>
 
       {/* Badges list */}
-      <div
-        ref={listRef}
-        className="flex flex-wrap gap-2 border rounded-lg p-4 bg-slate-50 dark:bg-slate-900/40"
-      >
-        {visible.length > 0 ? (
-          visible.map((k) => {
-            // color strength by popularity
-            const t = k.total_libros ?? 0;
-            const variantClass =
-              t >= 20
-                ? "bg-sky-800 text-white"
-                : t >= 8
-                ? "bg-sky-600 text-white"
-                : "bg-white/80 text-slate-800";
+      <Card>
+        <div ref={listRef} className="flex flex-wrap gap-2 px-2">
+          {visible.length > 0 ? (
+            visible.map((k) => {
+              // color strength by popularity
+              const t = k.total_libros ?? 0;
+              const variantClass =
+                t >= 20
+                  ? "bg-sky-800 text-white"
+                  : t >= 8
+                  ? "bg-sky-600 text-white"
+                  : "bg-white/80 text-slate-800";
 
-            return (
-              <Link
-                key={k.id}
-                href={`/books/keywords/${k.id}`}
-                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${variantClass} shadow-sm hover:scale-105 transform transition`}
-              >
-                <span className="font-medium">{k.nombre}</span>
-                <span className="text-xs opacity-80">({k.total_libros})</span>
-              </Link>
-            );
-          })
-        ) : (
-          <p className="text-sm text-slate-500">
-            No se encontraron palabras clave con estos filtros.
-          </p>
-        )}
-      </div>
+              return (
+                <Link
+                  key={k.id}
+                  href={`/books/keywords/${k.id}`}
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${variantClass} shadow-sm hover:scale-105 transform transition`}
+                >
+                  <span className="font-medium">{k.nombre}</span>
+                  <span className="text-xs opacity-80">({k.total_libros})</span>
+                </Link>
+              );
+            })
+          ) : (
+            <p className="text-sm text-slate-500">
+              No se encontraron palabras clave con estos filtros.
+            </p>
+          )}
+        </div>
+      </Card>
 
       {/* Ver más / Paginación ligera */}
       <div className="flex items-center justify-between">

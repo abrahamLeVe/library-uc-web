@@ -21,6 +21,7 @@ const menuItems = [
   { label: "Autor", href: "/books/author" },
   { label: "Carreras", href: "/books/career" },
   { label: "Especialidades", href: "/books/speciality" },
+  { label: "Palabras clave", href: "/books/keywords" },
 ];
 
 export default function MobileMenu() {
