@@ -1,9 +1,11 @@
+import { KeywordBadgesAdvanced } from "@/components/common/keywords-badges";
 import { TableSkeleton } from "@/components/common/skeleton-entity";
 import TableEntity from "@/components/common/table-entity";
 import {
   fetchEntityConLibrosAll,
   fetchLibrosPorAnioAll,
 } from "@/lib/data/entity.data";
+import { fetchPalabrasClaveFullData } from "@/lib/data/Keywords.data";
 
 import { Metadata } from "next";
 import { Suspense } from "react";
@@ -15,7 +17,6 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function StatisticsPage() {
-  // 📊 Consultas paralelas
   const [carrerasData, especialidadesData, autoresData, aniosData] =
     await Promise.all([
       fetchEntityConLibrosAll({
@@ -36,16 +37,12 @@ export default async function StatisticsPage() {
       fetchLibrosPorAnioAll(),
     ]);
 
+  const palabrasClaveData = await fetchPalabrasClaveFullData();
+
   return (
-    <div className="grid-cols-4">
-      <h2 className="text-xl md:text-2xl pb-1">Estadísticas de Biblioteca</h2>
-      <div
-        className="grid gap-4 
-                 grid-cols-1 
-                 sm:grid-cols-2 
-                 lg:grid-cols-3 
-                 xl:grid-cols-4"
-      >
+    <>
+      <h2 className="text-xl md:text-2xl pb-4">Estadísticas de Biblioteca</h2>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <Suspense fallback={<TableSkeleton col2="Carrera" />}>
           <TableEntity
             titleCol="Carrera"
@@ -61,7 +58,7 @@ export default async function StatisticsPage() {
             data={especialidadesData}
           />
         </Suspense>
-        <TableSkeleton col2="Autor" />
+
         <Suspense fallback={<TableSkeleton col2="Autor" />}>
           <TableEntity
             titleCol="Autor"
@@ -74,6 +71,8 @@ export default async function StatisticsPage() {
           <TableEntity titleCol="Año" basePath="/books/anio" data={aniosData} />
         </Suspense>
       </div>
-    </div>
+
+      <KeywordBadgesAdvanced data={palabrasClaveData} />
+    </>
   );
 }

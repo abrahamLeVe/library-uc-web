@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, Layers, Tag, User } from "lucide-react";
+import { Calendar, KeyRound, Layers, Tag, User } from "lucide-react";
 
 export const menuListOptions = [
   {
@@ -23,8 +23,14 @@ export const menuListOptions = [
   {
     label: "Especialidad",
     href: "/books/speciality",
-    shortcut: "⌘E",
+    shortcut: "⌘P",
     icon: <Tag className="h-4 w-4" />,
+  },
+  {
+    label: "Palabras clave",
+    href: "/books/keywords",
+    shortcut: "⌘E",
+    icon: <KeyRound className="h-4 w-4" />,
   },
 ];
 

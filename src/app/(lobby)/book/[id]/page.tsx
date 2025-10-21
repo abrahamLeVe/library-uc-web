@@ -46,10 +46,11 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
             <img
               src={imagen_url_signed}
               alt={libro.titulo}
-              className="w-64 h-auto rounded shadow bg-gray-200"
+              className="w-72 h-auto rounded shadow bg-gray-200"
+              loading="eager"
             />
           ) : (
-            <div className="w-64 h-80 bg-gray-200 flex items-center justify-center text-gray-500">
+            <div className="w-72 h-80 bg-gray-200 flex items-center justify-center ">
               Sin imagen
             </div>
           )}

@@ -1,7 +1,5 @@
-import postgres from "postgres";
+import { sql } from "../db";
 import { Entity, FetchEntityOptions, LibroPorAnio } from "../definitions";
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 /**
  * Entidades genéricas con total de libros (facultad, carrera, especialidad, autor)

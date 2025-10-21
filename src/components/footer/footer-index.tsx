@@ -90,10 +90,7 @@ export default async function Footer() {
         </div>
 
         <div className="flex items-center justify-between border-t py-6 text-sm text-gray-500">
-          <p>
-            © {new Date().getFullYear()} Biblioteca — Todos los derechos
-            reservados
-          </p>
+          <p>© {new Date().getFullYear()} Biblioteca — by abrahamLeVe</p>
         </div>
       </div>
     </footer>
