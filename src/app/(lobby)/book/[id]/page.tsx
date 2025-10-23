@@ -1,3 +1,4 @@
+import LibroNoEncontrado from "@/components/book-no-found";
 import { fetchAllLibros, fetchLibroPorId } from "@/lib/data/book.data";
 import { getPdfUrl } from "@/lib/s3";
 import { getYouTubeEmbedUrl } from "@/lib/utils";
@@ -16,8 +17,11 @@ export const revalidate = 60;
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
+  if (isNaN(id as unknown as number)) {
+    return <LibroNoEncontrado />;
+  }
   const libro = await fetchLibroPorId(Number(id));
-  if (!libro) return <p>Libro no encontrado.</p>;
+  if (!libro) return <LibroNoEncontrado />;
 
   // URLs firmadas
   const imagen_url_signed = libro.imagen
@@ -51,7 +55,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
             />
           ) : (
             <div className="w-72 h-80 bg-gray-200 flex items-center justify-center ">
-              Sin imagen
+              <span className="text-black">Sin imagen</span>
             </div>
           )}
         </div>

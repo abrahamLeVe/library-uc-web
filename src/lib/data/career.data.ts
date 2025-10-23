@@ -1,15 +1,13 @@
 import { sql } from "../db";
-import { Libros } from "../definitions";
+import { Carrera, Libros } from "../definitions";
 
 /**
  * Traer todas las carreras
  */
-export async function fetchCarreras(): Promise<
-  { id: number; nombre: string }[]
-> {
+export async function fetchCarreras(): Promise<Carrera[]> {
   try {
-    const data = await sql<{ id: number; nombre: string }[]>`
-      SELECT id, nombre
+    const data = await sql<Carrera[]>`
+      SELECT id, nombre, facultad_id
       FROM carreras
       ORDER BY nombre ASC
     `;

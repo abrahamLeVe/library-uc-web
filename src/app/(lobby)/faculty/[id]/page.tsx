@@ -42,7 +42,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <h2 className="text-xl md:text-2xl pb-1">Libros por facultad</h2>
+      <h2 className="text-xl md:text-2xl pb-2">Libros por facultad</h2>
       <Suspense fallback={<LibrosTableSkeleton />}>
         {/* ✅ Pasamos los libros con imagen firmada */}
         <LibrosTable libros={librosConImagen} />

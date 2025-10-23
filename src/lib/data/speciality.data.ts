@@ -1,14 +1,12 @@
 import { sql } from "../db";
-import { Libros } from "../definitions";
+import { Especialidad, Libros } from "../definitions";
 
 /**
  * Traer todas las especialidades
  */
-export async function fetchEspecialidades(): Promise<
-  { id: number; nombre: string }[]
-> {
+export async function fetchEspecialidades(): Promise<Especialidad[]> {
   try {
-    const data = await sql<{ id: number; nombre: string }[]>`
+    const data = await sql<Especialidad[]>`
       SELECT 
         id,
         nombre

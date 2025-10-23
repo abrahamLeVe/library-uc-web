@@ -15,8 +15,12 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
+export default async function Page(props: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ name?: string }>;
+}) {
   const { id } = await props.params;
+  const { name } = await props.searchParams;
 
   // 🔹 Obtener libros por año
   const libros = await fetchLibrosPorAnio(id);
@@ -34,7 +38,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <h2 className="text-xl md:text-2xl pb-1">Libros por año</h2>
+      <h2 className="text-xl md:text-2xl pb-2 ">Libros por año {name}</h2>
       <Suspense fallback={<LibrosTableSkeleton />}>
         {/* ✅ Pasamos los libros con URL firmada */}
         <LibrosTable libros={librosConImagen} />

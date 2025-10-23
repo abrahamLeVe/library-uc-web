@@ -34,7 +34,7 @@ export interface Carrera {
 export interface Especialidad {
   id: number;
   nombre: string;
-  carrera_id: number;
+  // carrera_id: number;
 }
 
 export interface Autor {
@@ -89,4 +89,46 @@ export interface PalabraClaveFull {
   facultades: string[]; // e.g. ["Ingeniería", "Ciencias"]
   carreras: string[]; // e.g. ["Civil", "Sistemas"]
   especialidades: string[]; // e.g. ["Estructuras"]
+}
+
+export interface CarreraEspecialidad {
+  carrera_id: number;
+  especialidad_id: number;
+}
+
+export interface FilterParams {
+  query: string;
+  currentPage?: number;
+  facultadId?: number | null;
+  carreraId?: number | null;
+  especialidadId?: number | null;
+  yearMin?: number | null;
+  yearMax?: number | null;
+  sortBy?: "az" | "za" | "popular";
+  page?: string;
+}
+
+export interface SidebarFiltersProps {
+  // Datos (provistos por el servidor)
+  facultades: Facultad[];
+  carreras: Carrera[];
+  especialidades: Especialidad[];
+  carrerasEspecialidades: CarreraEspecialidad[];
+
+  // Filtros iniciales (opcional)
+  initialFilters?: FilterParams;
+
+  // Callback cuando cambian los filtros
+  onChange?: (filters: FilterParams) => void;
+
+  // (opcional) Mostrar selector de años
+  showYearRange?: boolean;
+}
+
+export interface TableEntityProps {
+  titleCol: string;
+  basePath: string;
+  data: { id: string | number; nombre: string; total_libros: number }[];
+  showFilters?: boolean;
+  isYearTable?: boolean; // ✅ nueva prop para mostrar filtro por año
 }

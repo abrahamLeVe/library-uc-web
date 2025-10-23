@@ -19,13 +19,14 @@ export default async function Page() {
 
   return (
     <>
-      <h2 className="text-xl md:text-2xl pb-1">Buscar por Carrera</h2>
+      <h2 className="text-xl md:text-2xl pb-2">Buscar por Carrera</h2>
       <div className="flex justify-center">
         <Suspense fallback={<TableSkeleton col1="Carrera" />}>
           <TableEntity
             titleCol="Carrera"
             basePath="/books/career"
             data={carrerasData}
+            showFilters
           />
         </Suspense>
       </div>

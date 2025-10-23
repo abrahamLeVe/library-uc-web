@@ -1,17 +1,21 @@
-import { fetchFacultades } from "@/lib/data/facultad.data";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/button";
+import { fetchFacultadesByBooks } from "@/lib/data/faculty.data";
 
 export default async function Footer() {
-  const facultades = await fetchFacultades();
+  const facultades = await fetchFacultadesByBooks();
 
   const menuItems = [
     { label: "Fecha de publicación", href: "/books/anio" },
     { label: "Autor", href: "/books/author" },
     { label: "Carreras", href: "/books/career" },
     { label: "Especialidades", href: "/books/speciality" },
+    {
+      label: "Palabras clave",
+      href: "/books/keywords",
+    },
   ];
 
   return (

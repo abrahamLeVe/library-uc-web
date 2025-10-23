@@ -15,8 +15,12 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
+export default async function Page(props: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ name?: string }>;
+}) {
   const { id } = await props.params;
+  const { name } = await props.searchParams;
 
   // 🔹 Traer los libros de la carrera
   const libros = await fetchLibrosPorCarrera(Number(id));
@@ -34,7 +38,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <h1 className="text-xl font-bold mb-4">Libros por Carrera</h1>
+      <h2 className="text-xl md:text-2xl pb-2">Libros por Carrera {name}</h2>
       <Suspense fallback={<LibrosTableSkeleton />}>
         {/* ✅ Pasamos los libros con imagen firmada */}
         <LibrosTable libros={librosConImagen} />

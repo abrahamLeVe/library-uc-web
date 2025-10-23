@@ -1,5 +1,5 @@
 import { sql } from "../db";
-import { Libros } from "../definitions";
+import { Facultad, Libros } from "../definitions";
 
 /**
  * Traer todas las facultades
@@ -55,5 +55,25 @@ export async function fetchLibrosPorFacultad(facultadId: number) {
   } catch (error) {
     console.error("Database Error (fetchLibrosPorFacultad):", error);
     throw new Error("Failed to fetch books by faculty.");
+  }
+}
+
+export async function fetchFacultadesByBooks(): Promise<Facultad[]> {
+  try {
+    const data = await sql<Facultad[]>`
+      SELECT 
+        f.id,
+        f.nombre,
+        COUNT(l.id) AS total_libros
+      FROM facultades f
+      LEFT JOIN libros l
+        ON f.id = l.facultad_id
+      GROUP BY f.id, f.nombre
+      ORDER BY f.nombre ASC;
+    `;
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching facultades:", error);
+    return [];
   }
 }

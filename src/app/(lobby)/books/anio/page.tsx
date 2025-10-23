@@ -15,12 +15,18 @@ export default async function Page() {
 
   return (
     <>
-      <h2 className="text-xl md:text-2xl pb-1">
+      <h2 className="text-xl md:text-2xl pb-2">
         Buscar por fecha de publicación
       </h2>
       <div className="flex justify-center">
         <Suspense fallback={<TableSkeleton col1="Año" />}>
-          <TableEntity titleCol="Año" basePath="/books/anio" data={aniosData} />
+          <TableEntity
+            titleCol="Año"
+            basePath="/books/anio"
+            data={aniosData}
+            showFilters
+            isYearTable
+          />
         </Suspense>
       </div>
     </>

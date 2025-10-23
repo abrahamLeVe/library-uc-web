@@ -1,21 +1,58 @@
 import { sql } from "../db";
-import { Libros } from "../definitions";
+import { FilterParams, Libros } from "../definitions";
 
 const ITEMS_PER_PAGE = 8;
 
-/**
- * Búsqueda global de libros con paginación
- */
-export async function fetchFilteredBooksGlobal(
-  query: string,
-  currentPage: number
-): Promise<Libros[]> {
+export async function fetchFilteredBooksGlobal({
+  query = "",
+  currentPage = 1,
+  sortBy = "az",
+  facultadId = null,
+  carreraId = null,
+  especialidadId = null,
+  yearMin = null,
+  yearMax = null,
+}: FilterParams): Promise<Libros[]> {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  let whereClauses = sql``;
+
+  // 🔍 Búsqueda por texto
+  if (query) {
+    whereClauses = sql`${whereClauses} AND (
+      l.titulo ILIKE ${`%${query}%`} OR
+      l.descripcion ILIKE ${`%${query}%`} OR
+      l.isbn ILIKE ${`%${query}%`} OR
+      f.nombre ILIKE ${`%${query}%`} OR
+      c.nombre ILIKE ${`%${query}%`} OR
+      e.nombre ILIKE ${`%${query}%`} OR
+      a.nombre ILIKE ${`%${query}%`}
+    )`;
+  }
+
+  // 🏫 Filtros exactos
+  if (facultadId)
+    whereClauses = sql`${whereClauses} AND l.facultad_id = ${facultadId}`;
+  if (carreraId)
+    whereClauses = sql`${whereClauses} AND l.carrera_id = ${carreraId}`;
+  if (especialidadId)
+    whereClauses = sql`${whereClauses} AND l.especialidad_id = ${especialidadId}`;
+
+  // 📅 Rango de años
+  if (yearMin)
+    whereClauses = sql`${whereClauses} AND l.anio_publicacion >= ${yearMin}`;
+  if (yearMax)
+    whereClauses = sql`${whereClauses} AND l.anio_publicacion <= ${yearMax}`;
+
+  // 🔤 Orden
+  let orderClause = sql`ORDER BY l.id ASC`;
+  if (sortBy === "az") orderClause = sql`ORDER BY l.titulo ASC`;
+  if (sortBy === "za") orderClause = sql`ORDER BY l.titulo DESC`;
+  if (sortBy === "popular") orderClause = sql`ORDER BY l.created_at DESC`;
 
   try {
     const results = await sql<Libros[]>`
       SELECT
-        'Sin VP' AS vista_previa,
         l.id,
         l.titulo,
         l.descripcion,
@@ -37,16 +74,10 @@ export async function fetchFilteredBooksGlobal(
       LEFT JOIN especialidades e ON l.especialidad_id = e.id
       LEFT JOIN libros_autores la ON l.id = la.libro_id
       LEFT JOIN autores a ON la.autor_id = a.id
-      WHERE
-        l.titulo ILIKE ${`%${query}%`} OR
-        l.descripcion ILIKE ${`%${query}%`} OR
-        l.isbn ILIKE ${`%${query}%`} OR
-        f.nombre ILIKE ${`%${query}%`} OR
-        c.nombre ILIKE ${`%${query}%`} OR
-        e.nombre ILIKE ${`%${query}%`} OR
-        a.nombre ILIKE ${`%${query}%`}
+      WHERE 1=1
+      ${whereClauses}
       GROUP BY l.id, f.nombre, c.nombre, e.nombre
-      ORDER BY l.id ASC
+      ${orderClause}
       LIMIT ${ITEMS_PER_PAGE}
       OFFSET ${offset};
     `;
@@ -58,10 +89,39 @@ export async function fetchFilteredBooksGlobal(
   }
 }
 
-/**
- * Contar total de páginas según búsqueda global
- */
-export async function fetchBooksGlobalPages(query: string): Promise<number> {
+export async function fetchBooksGlobalPages({
+  query = "",
+  facultadId = null,
+  carreraId = null,
+  especialidadId = null,
+  yearMin = null,
+  yearMax = null,
+}: FilterParams): Promise<number> {
+  let whereClauses = sql``;
+
+  if (query) {
+    whereClauses = sql`${whereClauses} AND (
+      l.titulo ILIKE ${`%${query}%`} OR
+      l.descripcion ILIKE ${`%${query}%`} OR
+      l.isbn ILIKE ${`%${query}%`} OR
+      f.nombre ILIKE ${`%${query}%`} OR
+      c.nombre ILIKE ${`%${query}%`} OR
+      e.nombre ILIKE ${`%${query}%`} OR
+      a.nombre ILIKE ${`%${query}%`}
+    )`;
+  }
+
+  if (facultadId)
+    whereClauses = sql`${whereClauses} AND l.facultad_id = ${facultadId}`;
+  if (carreraId)
+    whereClauses = sql`${whereClauses} AND l.carrera_id = ${carreraId}`;
+  if (especialidadId)
+    whereClauses = sql`${whereClauses} AND l.especialidad_id = ${especialidadId}`;
+  if (yearMin)
+    whereClauses = sql`${whereClauses} AND l.anio_publicacion >= ${yearMin}`;
+  if (yearMax)
+    whereClauses = sql`${whereClauses} AND l.anio_publicacion <= ${yearMax}`;
+
   try {
     const countResult = await sql<{ total: number }[]>`
       SELECT COUNT(DISTINCT l.id) AS total
@@ -71,14 +131,8 @@ export async function fetchBooksGlobalPages(query: string): Promise<number> {
       LEFT JOIN especialidades e ON l.especialidad_id = e.id
       LEFT JOIN libros_autores la ON l.id = la.libro_id
       LEFT JOIN autores a ON la.autor_id = a.id
-      WHERE
-        l.titulo ILIKE ${`%${query}%`} OR
-        l.descripcion ILIKE ${`%${query}%`} OR
-        l.isbn ILIKE ${`%${query}%`} OR
-        f.nombre ILIKE ${`%${query}%`} OR
-        c.nombre ILIKE ${`%${query}%`} OR
-        e.nombre ILIKE ${`%${query}%`} OR
-        a.nombre ILIKE ${`%${query}%`};
+      WHERE 1=1
+      ${whereClauses};
     `;
 
     const total = Number(countResult[0]?.total || 0);
