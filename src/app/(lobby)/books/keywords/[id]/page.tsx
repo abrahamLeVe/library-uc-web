@@ -32,9 +32,9 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-      <h1 className="text-xl font-bold mb-4">
+      <h2 className="text-xl md:text-2xl pb-2">
         {`Libros asociados a la palabra clave "${palabraNombre}"`}
-      </h1>
+      </h2>
       <Suspense fallback={<LibrosTableSkeleton />}>
         <LibrosTable libros={librosConImagen} />
       </Suspense>

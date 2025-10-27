@@ -45,7 +45,6 @@ export default function TableEntity({
 
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-  // --- Filtrado ---
   const filteredData = useMemo(() => {
     return data
       .filter((item) => {
@@ -58,7 +57,6 @@ export default function TableEntity({
           return false;
         if (minBooks !== null && item.total_libros < minBooks) return false;
 
-        // solo filtrar por año si es tabla de años
         if (isYearTable) {
           const year = Number(item.nombre);
           if (year < yearRange[0] || year > yearRange[1]) return false;
@@ -89,7 +87,9 @@ export default function TableEntity({
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 w-full">
+    <div
+      className={cn("flex flex-col gap-4 w-full", showFilters && "md:flex-row")}
+    >
       {showFilters && (
         <Card className="w-full md:w-64 p-4 flex flex-col gap-4">
           <h4 className="font-semibold text-lg">Filtros</h4>
@@ -196,15 +196,15 @@ export default function TableEntity({
         <Table className="w-full border-collapse text-sm">
           <TableHeader>
             <TableRow>
-              <TableHead className="px-4 py-2 text-left">Libros</TableHead>
-              <TableHead className="px-4 py-2 text-left">{titleCol}</TableHead>
+              <TableHead>Libros</TableHead>
+              <TableHead>{titleCol}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedData.length > 0 ? (
               paginatedData.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="px-4 py-2">
+                  <TableCell>
                     <Link
                       href={`${basePath}/${item.id}?name=${item.nombre}`}
                       className={cn(buttonVariants({ variant: "default" }))}
@@ -212,8 +212,16 @@ export default function TableEntity({
                       {item.total_libros}
                     </Link>
                   </TableCell>
-                  <TableCell className="px-4 py-2 font-medium truncate">
-                    {item.nombre}
+                  <TableCell
+                    title={item.nombre}
+                    className="font-medium truncate"
+                  >
+                    <Link
+                      href={`${basePath}/${item.id}?name=${item.nombre}`}
+                      className={cn(buttonVariants({ variant: "link" }))}
+                    >
+                      {item.nombre}
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))

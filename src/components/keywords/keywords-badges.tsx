@@ -33,7 +33,6 @@ export function KeywordBadgesAdvanced({
   data,
   itemsPerPage = 50,
 }: KeywordBadgesAdvancedProps) {
-  // UI state
   const [search, setSearch] = useState("");
   const [letter, setLetter] = useState<string | null>(null);
   const [faculty, setFaculty] = useState<string | null>(null);

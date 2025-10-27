@@ -47,7 +47,6 @@ export default function SidebarFilters({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  // Función para actualizar la URL
   const updateUrl = useDebouncedCallback(() => {
     const params = new URLSearchParams(searchParams);
     params.set("page", "1");
@@ -96,8 +95,6 @@ export default function SidebarFilters({
 
     replace(`${pathname}?${params.toString()}`);
   }, 300);
-
-  // --- FILTRADOS BIDIRECCIONALES ---
 
   const facultadesFiltradas = useMemo(() => {
     if (!carreraId && !especialidadId) return facultades;
@@ -163,7 +160,6 @@ export default function SidebarFilters({
     return filtered;
   }, [especialidades, carreras, facultadId, carreraId, carrerasEspecialidades]);
 
-  // Reset dependientes al cambiar facultad/carrera
   useEffect(() => {
     setCarreraId(null);
     setEspecialidadId(null);

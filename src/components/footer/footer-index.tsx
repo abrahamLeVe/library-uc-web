@@ -1,8 +1,8 @@
+import { fetchFacultadesByBooks } from "@/lib/data/faculty.data";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/button";
-import { fetchFacultadesByBooks } from "@/lib/data/faculty.data";
 
 export default async function Footer() {
   const facultades = await fetchFacultadesByBooks();
@@ -91,8 +91,40 @@ export default async function Footer() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t py-6 text-sm text-gray-500">
-          <p>© {new Date().getFullYear()} Biblioteca — by abrahamLeVe</p>
+        <div className="flex items-center justify-start border-t py-6 text-sm gap-1">
+          <p>Biblioteca</p> © 2025 by
+          <a
+            href="https://github.com/abrahamLeVe/library-uc-web"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            abrahamLeVe
+          </a>
+          <p>is licensed under </p>
+          <a
+            href="https://creativecommons.org/licenses/by-nc/4.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            CC BY-NC 4.0
+          </a>
+          <img
+            src="https://mirrors.creativecommons.org/presskit/icons/cc.svg"
+            alt="Creative Commons"
+            style={{ maxWidth: "1em", maxHeight: "1em", marginLeft: ".2em" }}
+          />
+          <img
+            src="https://mirrors.creativecommons.org/presskit/icons/by.svg"
+            alt="Atribución"
+            style={{ maxWidth: "1em", maxHeight: "1em", marginLeft: ".2em" }}
+          />
+          <img
+            src="https://mirrors.creativecommons.org/presskit/icons/nc.svg"
+            alt="No Comercial"
+            style={{ maxWidth: "1em", maxHeight: "1em", marginLeft: ".2em" }}
+          />
         </div>
       </div>
     </footer>
