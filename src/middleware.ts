@@ -1,12 +1,28 @@
-import NextAuth from "next-auth";
-import { authConfig } from "./auth.config";
+import { NextResponse } from "next/server";
+import { waitUntil } from "@vercel/functions";
+import { ratelimit } from "./lib/rate-limiter";
 
-export default NextAuth(authConfig).auth;
+export async function middleware() {
+  const identifier = "api";
+  const { success, pending } = await ratelimit.limit(identifier);
+
+  // pending is a promise for handling the analytics submission
+  waitUntil(pending);
+
+  try {
+    if (!success) {
+      return new NextResponse("Estás haciendo solicitudes demasiado rápido.", {
+        status: 429,
+      });
+    }
+  } catch {
+    return new NextResponse(
+      "Lo sentimos, algo salió mal al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.",
+      { status: 500 }
+    );
+  }
+}
 
 export const config = {
-  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: [
-    // "/((?!api|_next/static|_next/image|.*\\.png$).*)",
-    "/dashboard/:path*",
-  ],
+  matcher: ["/api/chat/:path*"],
 };

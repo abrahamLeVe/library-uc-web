@@ -57,3 +57,50 @@ export async function fetchLibroPorId(id: number): Promise<Libros | null> {
     throw new Error("Failed to fetch book by ID.");
   }
 }
+
+export async function fetchAllLibrosForChatbot(): Promise<
+  {
+    id: number;
+    titulo: string;
+    facultad: string;
+    carrera: string;
+    especialidad: string;
+    autores: string;
+    updated_at?: Date;
+  }[]
+> {
+  try {
+    const libros = await sql<
+      {
+        id: number;
+        titulo: string;
+        facultad: string;
+        carrera: string;
+        especialidad: string;
+        autores: string;
+        updated_at?: Date;
+      }[]
+    >`
+      SELECT
+        l.id,
+        l.titulo,
+        COALESCE(f.nombre, '-') AS facultad,
+        COALESCE(c.nombre, '-') AS carrera,
+        COALESCE(e.nombre, '-') AS especialidad,
+        COALESCE(STRING_AGG(DISTINCT a.nombre, ', '), 'Sin autores') AS autores,
+        l.updated_at
+      FROM libros l
+      LEFT JOIN facultades f ON l.facultad_id = f.id
+      LEFT JOIN carreras c ON l.carrera_id = c.id
+      LEFT JOIN especialidades e ON l.especialidad_id = e.id
+      LEFT JOIN libros_autores la ON l.id = la.libro_id
+      LEFT JOIN autores a ON la.autor_id = a.id
+      GROUP BY l.id, f.nombre, c.nombre, e.nombre, l.updated_at
+      ORDER BY l.id ASC
+    `;
+    return libros;
+  } catch (error) {
+    console.error("Database Error (fetchAllLibrosForChatbot):", error);
+    throw new Error("Failed to fetch all books for chatbot.");
+  }
+}

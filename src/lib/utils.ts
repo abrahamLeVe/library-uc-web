@@ -56,3 +56,31 @@ export function getYouTubeEmbedUrl(url: string | null) {
   // Si no coincide con ningún patrón, devuelve el original
   return url;
 }
+
+const randomMessages = [
+  "¡Hola! Bienvenido a la biblioteca de la universidad 📚",
+  "¿Buscas un libro, artículo o tesis? Puedo ayudarte a encontrarlo.",
+  "Estoy aquí para asistirte con tus búsquedas en la biblioteca.",
+  "¿Necesitas ayuda para ubicar un material en el catálogo?",
+
+  "¿Te gustaría conocer nuestras novedades bibliográficas?",
+  "Hablemos, ¿qué tipo de material estás buscando hoy?",
+  "¿Quieres acceder a recursos digitales o bases de datos académicas?",
+  "Estoy listo para ayudarte con información sobre autores o temas específicos.",
+  "Tu aprendizaje es importante. ¿Sobre qué tema necesitas información?",
+  "Puedo recomendarte libros según tu carrera o área de estudio.",
+  "¡Hola! Soy tu asistente de la biblioteca. ¿En qué puedo ayudarte hoy?",
+  "¿Buscas información para tu tesis o trabajo académico?",
+  "Estoy aquí para ayudarte a aprovechar todos los recursos de la biblioteca.",
+  "¿Deseas saber el horario o los servicios disponibles en la biblioteca?",
+  "Explícame qué necesitas y te ayudaré a encontrar el material adecuado.",
+  "Puedo mostrarte los libros más consultados de tu facultad.",
+  "¿Te gustaría aprender a usar el catálogo en línea o la biblioteca virtual?",
+  "Hablemos, estoy aquí para apoyarte en tu búsqueda académica.",
+  "¿Tienes alguna duda sobre los servicios de la biblioteca de la universidad?",
+];
+
+export function getRandomMessage() {
+  const randomIndex = Math.floor(Math.random() * randomMessages.length);
+  return randomMessages[randomIndex];
+}
