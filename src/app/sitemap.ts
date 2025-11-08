@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { client_url } from "@/lib/urls";
 import { fetchAllLibrosForChatbot } from "@/lib/data/book.data";
 
+export const revalidate = 60; // 1 hora
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const libros = await fetchAllLibrosForChatbot();
 
